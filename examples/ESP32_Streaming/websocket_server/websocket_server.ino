@@ -5,11 +5,24 @@
 CommManager cm;
 
 
+float Kp;
+float Kd;
+float Ki;
+
+float angle;
+float omega;
+float dwdt;
+
 void setup()
 {
     delay(500); //initial wait for safety
     Serial.begin(115200);//set up serial
     cm.connect("Hercules_Mulligan","comcastsucks99");
+    cm.addSlider("Kp",-5,5,0.1, &Kp);
+    cm.addSlider("Kd",-5,5,0.1, &Kd);
+    cm.addSlider("KI",-5,5,0.1, &Ki);
+    cm.add
+    
 
 }
 
