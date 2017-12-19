@@ -86,9 +86,9 @@ document.getElementById("ipsubmit").addEventListener("mousedown",function(){
       console.log(received_msg);
       plot.step(eval(received_msg));
     };
-    timer2 = setInterval(function(){
-        ws.send("Parameter Request");
-    }, 50);
+    //timer2 = setInterval(function(){
+    //    ws.send("Parameter Request");
+    //}, 50);
  
     ws.onclose = function(){ 
       // websocket is closed.
