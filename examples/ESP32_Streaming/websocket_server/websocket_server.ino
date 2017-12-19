@@ -1,46 +1,16 @@
-#include <WiFi.h>
-#include <WebSocketServer.h>
+#include "Six302.h"
 #include <math.h>
 
-//Enter your Wifi and Login credentials here:
-const char* ssid     = "Hercules_Mulligan";
-const char* password = "comcastsucks99";
 
-WiFiServer server(80);
-WebSocketServer webSocketServer;
-WiFiClient client;
+CommManager cm;
 
-#define REPORT_PERIOD 50
-
-
-int value;
-long unsigned int timeo;
-int report_count;
-bool handshake;
-bool c;
 
 void setup()
 {
     delay(500); //initial wait for safety
     Serial.begin(115200);//set up serial
-    delay(10); //teensy tiny wait
-    //internet hook up try
-    Serial.print("Connecting to ");
-    Serial.println(ssid);
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println("");
-    Serial.println("WiFi connected.");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
-    server.begin();
-    timeo = micros();
-    report_count = 0;
-    handshake = false;
-    c = false;
+    cm.connect("Hercules_Mulligan","comcastsucks99");
+
 }
 
 void loop(){
