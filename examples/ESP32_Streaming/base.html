@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+
+  <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="/src/js/packery.pkgd.min.js"></script>
+  <script src="/src/js/draggabilly.pkgd.min.js"></script>
+  <script src="/src/js/socket.io.js"></script>
+  <script src="/src/js/time_series.js" ></script>
+  <script src="/src/js/pushbutton.js" ></script>
+  <script src="/src/js/toggle.js" ></script>
+  <script src="/src/js/wNumb.js" ></script>
+  <script src="/src/js/numerical_reporter.js" ></script>
+  <link rel="stylesheet" type="text/css" href="/src/css/checkboxes.min.css">
+  <link rel="stylesheet" type="text/css" href="/src/css/gui.css">
+</head>
+
+<body>
+<h1>Web GUI Example</h1>
+<p>Local IP: <input type="text" name="ipaddress" id="ipaddress"/><button id="ipsubmit">Submit/Connect</button></p>
+<h3 id="grid_status">Grid Locked</h3>
+<div class="ckbx-style-8">
+    <input type="checkbox" id="grid_lock" value="1" name="hey">
+    <label for="grid_lock"></label>
+</div>
+
+<div class="cp">
+  <div class="cp-item" id="plotbox"></div>
+  <div class="cp-item" id="plotbox2"></div>
+  <!--<div class="cp-item" id="toggle1"></div>-->
+</div>
+
+
+<script>
+/*
+
+    <input type="checkbox" id="ckbx-style-8-1" value="1" name="hey" onclick="LockToggle()">
+    <label for="ckbx-style-8-1"></label>
+*/
+var mouseX=0;
+var mouseY = 0;
+document.addEventListener("mousemove",function(e){
+        mouseX = e.pageX;
+        mouseY = e.pageY;
+});
+var PLOT_HEIGHT = 200;
+var PLOT_WIDTH = 300;
+var plot;
+var plot2;
+var pb1;
+var pb2;
+var pb3;
+var toggle_1;
+
+var reporter_x;
+var reporter_y;
+var reporter_x2;
+var reporter_y2;
+
+window.onload = function(){
+    //var socket = io('http://localhost:5000','/gui');
+    //var socket = io('/gui');
+    //var socket = io('http://192.168.0.104');
+    //var ws = new WebSocket("ws://192.168.0.105");
+    var unique = 456;
+    plot = new Time_Series("plotbox",'Accelerations',PLOT_WIDTH, PLOT_HEIGHT,60,[-100,100],3,["green","yellow","blue"],unique);
+    plot2 = new Time_Series("plotbox2",'Mouse Moves',PLOT_WIDTH, PLOT_HEIGHT,60,[0,1000],2,["red","blue"],unique+1);
+    //pb1  = new PushButton("toggle1",123123,"Fire","Red","Black");
+    timer = setInterval(function(){
+        plot2.step([[mouseX],[mouseY]]);
+    }, 10);
+}
+
+
+document.getElementById("ipsubmit").addEventListener("mousedown",function(){
+    var ip = document.getElementById("ipaddress").value;
+    var ws = new WebSocket("ws://"+ip);
+    ws.onopen = function(){
+      // Web Socket is connected, send data using send()
+      ws.send("Parameter Request");
+      console.log("Message is sent...");
+    }; 
+    ws.onmessage = function (evt) { 
+      console.log("got it");
+      var received_msg = evt.data;
+      console.log(received_msg);
+      plot.step(eval(received_msg));
+    };
+    timer2 = setInterval(function(){
+        ws.send("Parameter Request");
+    }, 50);
+ 
+    ws.onclose = function(){ 
+      // websocket is closed.
+      console.log("Connection is closed..."); 
+    };
+});
+
+
+</script>
+
+<script src="/src/js/draggable.js"></script>
+
+</body>
+</html>
