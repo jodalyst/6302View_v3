@@ -2,45 +2,41 @@
 #include <math.h>
 
 
-CommManager cm;
+CommManager cm; //create instance of commManager
 
-
+//Create incoming control variables, parameters, etc...
 float Kp;
 float Kd;
 float Ki;
 
+//Create outgoing variables for control and plotting...
 float angle;
 float omega;
 float dwdt;
+float vms[2];
 
 void setup()
 {
     delay(500); //initial wait for safety
     Serial.begin(115200);//set up serial
-    cm.connect("Hercules_Mulligan","comcastsucks99");
-    cm.addSlider("Kp",-5,5,0.1, &Kp);
-    cm.addSlider("Kd",-5,5,0.1, &Kd);
-    cm.addSlider("KI",-5,5,0.1, &Ki);
-    cm.add
     
-
+    cm.connect("Hercules_Mulligan","comcastsucks99");
+    cm.addSlider("Kp",-5,5,0.1, &Kp); //add a slider called Kp and link it to variable Kp
+    cm.addSlider("Kd",-5,5,0.1, &Kd); //add a slider called Kd and link it to variable Kd
+    cm.addSlider("KI",-5,5,0.1, &Ki); // similar...
+    cm.addPlot("Angle",-3,3,100, &angle); //add a plotter called "Angle" and link it to variable angle
+    cm.addPlot("Omega",-50,50,100, &omega); //similar...
+    cm.addPlot("dwdt",-10,10,100, &dwdt); //similar...
+    cm.addPlot("Voltages",0,3,100, vms,2); //add a plotter (two plots in same window) called "Voltages" and link to vms array
 }
 
 void loop(){
-  if (!c){
-    client = server.available(); //listen for incoming clients
-  }
-  if (client){
-    if (!handshake){
-      if (client.connected() && webSocketServer.handshake(client)) handshake = true;
-      
-    }
-  }else{
-    handshake=false; //reset for next time
-    c = false;
-  }
+
+  //User code here!
+
 
   
+  cm.step(); //call once per loop. Blocks until step duration has occurred.
 }
 
 
