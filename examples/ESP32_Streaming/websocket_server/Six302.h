@@ -23,12 +23,13 @@ class CommManager
     WiFiServer server;
     WebSocketServer webSocketServer;
     WiFiClient client;
-    CommManager(int);
+    CommManager(int, int);
     bool step();
     bool connect(const char*, const char*);
     bool addSlider(char*,float,float,float,float*);
-    bool addToggle(char*);
+    bool addToggle(char*,bool*);
     bool addPlot(char*,float,float,int,float*,int);
+    bool addCSV();
     float* incoming_data [INCOMING_LIMIT]; //no more than 20 params supported at this moment
     float* outgoing_data [OUTGOING_LIMIT]; //no more than 10 params supported
     int outgoing_size[OUTGOING_LIMIT]; //for knowing if single/multiple plots;
@@ -49,10 +50,7 @@ class CommManager
     int connection_status;
     int build_iterator;
     
-    
-
-
-
-  
 }
+
+#endif
 

@@ -1,6 +1,6 @@
 #include "Six302.h"
 
-CommMaager::CommManager(int sp=1000, int rp=50000) 
+CommManager::CommManager(int sp=1000, int rp=50000) 
 {
   WiFiServer server(80);
   WebSocketServer webSocketServer;
@@ -71,8 +71,8 @@ bool CommManager::addCSV(){
  (1) Checks to see if there are any GUI-originating commands, and extracts them, updating variables embedded in main code
  (2) Updates the reporting counter and if needed, transmits the data currently existing in the system variables
  */
-CommManager::step(){
-  if (client_connected && handshake && client.available()) {             // if there's bytes to read from the client,
+bool CommManager::step(){
+  if (client_connected && handshake && client.available()) { // if there's bytes to read from the client (but only if it ,
     String data = webSocketServer.getData();
     int current_index=0;
     for (int count=0; count<incoming_count;count++){
@@ -84,6 +84,7 @@ CommManager::step(){
     }
   }
   if(report_count >= report_count_iter){ //time to check connection and/or report data
+    report_count =0; //reset
     switch (connection_status){
       case IDLE:
         client = server.available();
@@ -111,37 +112,30 @@ CommManager::step(){
         if (build_iterator==-1){
           webSocketServer.sendData("BUILDING");
         }else if (build_iterator == incoming_count+outgoing_count){
-          if (csv) webSocketServer.sendData("CSV");
-          connection_status = RUNNING;
-        }else if (build_iterator
-        
-
-      
-    }
-    if (client && client.connected()){ //check if we're still connected!
-      report_count = 0;
-      client_connected=true;  //client going to true
-      if(handshake){ //we have handshaked...so data sending is good to go
-        sprintf(data_to_send,"[");
-        for (int i=0;i<outgoing_count; i++){
-          sprintf(data_to_send+strlen(data_to_send),"[");
-          for (int j=0;j<outgoing_size[i];j++){
-            sprintf(data_to_send+strlen(data_to_send),"[%.2f],",*(outgoing_data[i]+j));
-          }
-          sprintf(data_to_send+strlen(data_to_send),"],");
+          if (csv) webSocketServer.sendData("END~CSV"); //end build but tack on csv option
+          else webSocketServer.sendData("END"); //end build with no csv option
+          connection_status = RUNNING; //we're done and into running mode.
+        }else if (build_iterator){
+          webSocketServer.sendData(build_strings[build_iterator]); //send each build string separately
         }
-        webSocketServer.sendData(data_to_send);
-      }else{ //otherwise try to establish a handshake
-        if (webSocketServer.handshake(client)) handshake = true; //handshake -> true
-      }  
-    }else{ //we are not connected to a client...look for available clients
-      client = server.available();
-      if (client){ //found a new one...reset everything
-        
-        client_connected = false; //reset
-        handshake = false; //reset
-      }
-    }   
+        build_iterator++;
+      case RUNNING:
+        if (client.connected()){ //check if we're still connected!
+          sprintf(data_to_send,"[");
+          for (int i=0;i<outgoing_count; i++){
+            sprintf(data_to_send+strlen(data_to_send),"[");
+            for (int j=0;j<outgoing_size[i];j++){
+              sprintf(data_to_send+strlen(data_to_send),"[%.2f],",*(outgoing_data[i]+j));
+            }
+            sprintf(data_to_send+strlen(data_to_send),"],");
+          }
+          webSocketServer.sendData(data_to_send);
+        }else{ //lost our connection
+          client_connected = false; //done
+          handshake = false; //done
+          connection_status = IDLE;
+        }  
+    }
   }else{
     report_count++;
   }
