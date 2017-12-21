@@ -19,7 +19,6 @@ void setup()
 {
     delay(500); //initial wait for safety
     Serial.begin(115200);//set up serial
-    
     cm.connect("Hercules_Mulligan","comcastsucks99");
     cm.addSlider("Kp",-5,5,0.1, &Kp); //add a slider called Kp and link it to variable Kp
     cm.addSlider("Kd",-5,5,0.1, &Kd); //add a slider called Kd and link it to variable Kd
@@ -32,12 +31,17 @@ void setup()
 
 void loop(){
 
-  //User code here!
-
-
+  //User code here!  take in readings, update values, etc...should be all good.
   
   cm.step(); //call once per loop. Blocks until step duration has occurred.
 }
+
+
+
+
+
+
+
 
 
 void loop(){
