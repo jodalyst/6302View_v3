@@ -16,12 +16,24 @@
 </head>
 
 <body>
-<h1>Web GUI Example</h1>
+<h1>6302View</h1>
+<p><i>Enter the IP address printed from your microcontroller's Serial readout here, press Submit/Connect, and start working.<i></p>
 <p>Local IP: <input type="text" name="ipaddress" id="ipaddress"/><button id="ipsubmit">Submit/Connect</button></p>
+<div style="height:100px;">
+<div style="float:left;width:200px;">
 <h3 id="grid_status">Grid Locked</h3>
 <div class="ckbx-style-8">
     <input type="checkbox" id="grid_lock" value="1" name="hey">
     <label for="grid_lock"></label>
+</div>
+</div>
+<div style="float:left;width:200px;">
+<h3 id="grid_status">CSV Generate?</h3>
+<div class="ckbx-style-8">
+    <input type="checkbox" id="csv_enable" value="1" name="csv_enable">
+    <label for="csv_enable"></label>
+</div>
+</div>
 </div>
 
 <div class="cp">
@@ -37,6 +49,10 @@
     <input type="checkbox" id="ckbx-style-8-1" value="1" name="hey" onclick="LockToggle()">
     <label for="ckbx-style-8-1"></label>
 */
+
+//Use these when laying out colors!
+var standard_colors = ["blue","red","green","yellow","purple"];
+
 var mouseX=0;
 var mouseY = 0;
 document.addEventListener("mousemove",function(e){
@@ -57,6 +73,12 @@ var reporter_y;
 var reporter_x2;
 var reporter_y2;
 
+
+var IDLE = 0;
+var BUILDING = 1; 
+
+var system_state = IDLE;
+
 window.onload = function(){
     //var socket = io('http://localhost:5000','/gui');
     //var socket = io('/gui');
@@ -73,8 +95,9 @@ window.onload = function(){
 
 
 document.getElementById("ipsubmit").addEventListener("mousedown",function(){
-    var ip = document.getElementById("ipaddress").value;
-    var ws = new WebSocket("ws://"+ip);
+    var ip = document.getElementById("ipaddress").value; //collect the ip address
+    //Should add in some checker/an alert that comes up if you can't actually connect.
+    var ws = new WebSocket("ws://"+ip); //create new websocket to the ip of interest
     ws.onopen = function(){
       // Web Socket is connected, send data using send()
       ws.send("Parameter Request");
