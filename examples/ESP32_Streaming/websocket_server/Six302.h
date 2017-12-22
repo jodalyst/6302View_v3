@@ -23,12 +23,12 @@ class CommManager
     WiFiServer server;
     WebSocketServer webSocketServer;
     WiFiClient client;
-    CommManager(int, int);
+    CommManager(int sp=1000, int rp=50000);
     bool step();
-    bool connect(const char*, const char*);
+    bool connect(char*,char*);
     bool addSlider(char*,float,float,float,float*);
-    bool addToggle(char*,bool*);
-    bool addPlot(char*,float,float,int,float*,int);
+    bool addToggle(char*,float*);
+    bool addPlot(char*,float,float,int,float*,int plots=1);
     bool addCSV();
     float* incoming_data [INCOMING_LIMIT]; //no more than 20 params supported at this moment
     float* outgoing_data [OUTGOING_LIMIT]; //no more than 10 params supported
@@ -38,8 +38,8 @@ class CommManager
     bool handshake;
     bool client_connected;
     long unsigned int timeo;
-    int incoming_num; //number of data values that are coming in
-    int outgoing_num; //number of data points to send out
+    int incoming_count; //number of data values that are coming in
+    int outgoing_count; //number of data points to send out
     bool csv;
     char build_strings[INCOMING_LIMIT+OUTGOING_LIMIT+1][50];//50 char limit
     int step_period; //in microseconds
@@ -50,7 +50,7 @@ class CommManager
     int connection_status;
     int build_iterator;
     
-}
+};
 
 #endif
 

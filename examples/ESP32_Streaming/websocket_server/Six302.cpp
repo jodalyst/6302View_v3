@@ -1,7 +1,6 @@
 #include "Six302.h"
 
-CommManager::CommManager(int sp=1000, int rp=50000) 
-{
+CommManager::CommManager(int sp, int rp) {
   WiFiServer server(80);
   WebSocketServer webSocketServer;
   WiFiClient client;
@@ -18,7 +17,7 @@ CommManager::CommManager(int sp=1000, int rp=50000)
 }
 
 
-CommManager::connect(char* ssid,char* password){
+bool CommManager::connect(char* ssid,char* password){
     if(VERBOSE){
       Serial.print("Connecting to ");
       Serial.println(ssid);
@@ -44,7 +43,7 @@ bool CommManager::addSlider(char* name,float low,float high,float step_size, flo
   incoming_count ++; //incrememnt the known amount of outgoing data
 }
 
-bool CommManager::addPlot(char* name,float v_low,float v_high,int steps_displayed, float* linker, int plots=1){
+bool CommManager::addPlot(char* name,float v_low,float v_high,int steps_displayed, float* linker, int plots){
   int n = sprintf(build_strings[incoming_count+outgoing_count],"P&%s&%d&%.3g&%.3g&%d",name,plots,v_low,v_high,steps_displayed);
   if(VERBOSE)Serial.print(" Buildstring for Plot: "); Serial.print(n); Serial.println(" characters long");
   outgoing_data[outgoing_count] = linker; //store and remember address to tied variable
@@ -52,8 +51,8 @@ bool CommManager::addPlot(char* name,float v_low,float v_high,int steps_displaye
   outgoing_count ++;
 }
 
-bool CommManager::addToggle(char* name, bool* linker){
-  int n = sprintf(build_strings[incoming_count+outgoing_count],"T&%s",name,low,high,step_size);
+bool CommManager::addToggle(char* name, float* linker){
+  int n = sprintf(build_strings[incoming_count+outgoing_count],"T&%s",name);
   if(VERBOSE)Serial.print(" Buildstring for Slider: "); Serial.print(n); Serial.println(" characters long");
   incoming_data[incoming_count] = linker; //remember linked-to-variable
   incoming_count ++; //incrememnt the known amount of outgoing data 
@@ -77,13 +76,14 @@ bool CommManager::step(){
     int current_index=0;
     for (int count=0; count<incoming_count;count++){
       int new_index = data.indexOf("~",current_index);
-      if (new_index==-1) String raw = data.substring(current_index);
-      else String raw = data.substring(current_index,new_index);
+      String raw;
+      if (new_index==-1) raw = data.substring(current_index);
+      else raw = data.substring(current_index,new_index);
       *incoming_data[count] = raw.toFloat(); //convert to float and assign to appropriate user variable
       current_index = new_index; 
     }
   }
-  if(report_count >= report_count_iter){ //time to check connection and/or report data
+  if(report_count >= report_num_iter){ //time to check connection and/or report data
     report_count =0; //reset
     switch (connection_status){
       case IDLE:
@@ -141,7 +141,7 @@ bool CommManager::step(){
   }else{
     report_count++;
   }
-  while (micros()-timeo<period);
+  while (micros()-timeo<step_period);
   timeo = micros(); //update time
 }
 
