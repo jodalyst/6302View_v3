@@ -76,14 +76,18 @@ var reporter_y2;
 
 var IDLE = 0;
 var BUILDING = 1; 
+var UPDATE =2;
+var RUNNING = 3;
 
 var system_state = IDLE;
 
+var data_for_csv=[];
+
+var sliders = []; //array of hooks to slider objects.
+var toggles = []; //array of hooks for toggle objects
+var plots = []; //array of hooks for plot objects
+
 window.onload = function(){
-    //var socket = io('http://localhost:5000','/gui');
-    //var socket = io('/gui');
-    //var socket = io('http://192.168.0.104');
-    //var ws = new WebSocket("ws://192.168.0.105");
     var unique = 456;
     plot = new Time_Series("plotbox",'Accelerations',PLOT_WIDTH, PLOT_HEIGHT,60,[-100,100],3,["green","yellow","blue"],unique);
     plot2 = new Time_Series("plotbox2",'Mouse Moves',PLOT_WIDTH, PLOT_HEIGHT,60,[0,1000],2,["red","blue"],unique+1);
@@ -118,6 +122,79 @@ document.getElementById("ipsubmit").addEventListener("mousedown",function(){
       console.log("Connection is closed..."); 
     };
 });
+
+var MessageParser = function(evt){
+    console.log("message received");
+    var received_msg = evt.data;
+    console.log(received_msg);
+    switch (system_state){
+        case IDLE:
+            if (received_msg==="BUILDING"){
+                system_state = BUILDING;
+                sliders = [];
+                toggles = [];
+                plots = [];
+                WipeGUI();
+            }
+        case BUILDING:
+            if (received_msg==="END"){
+                system_state = UPDATE;
+            }
+        case UPDATE:
+
+        case RUNNING:
+
+    }
+};
+
+var WipeGUI = function(){
+
+
+};
+
+/* Based off of code from here:
+https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
+*/
+var ExportCSV = function(filename, rows) {
+    var processRow = function (row) {
+        var finalVal = '';
+        for (var j = 0; j < row.length; j++) {
+            var innerValue = row[j] === null ? '' : row[j].toString();
+            if (row[j] instanceof Date) {
+                innerValue = row[j].toLocaleString();
+            };
+            var result = innerValue.replace(/"/g, '""');
+            if (result.search(/("|,|\n)/g) >= 0)
+                result = '"' + result + '"';
+            if (j > 0)
+                finalVal += ',';
+            finalVal += result;
+        }
+        return finalVal + '\n';
+    };
+
+    var csvFile = '';
+    for (var i = 0; i < rows.length; i++) {
+        csvFile += processRow(rows[i]);
+    }
+
+    var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+    if (navigator.msSaveBlob) { // IE 10+
+        navigator.msSaveBlob(blob, filename);
+    } else {
+        var link = document.createElement("a");
+        if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+}
 
 
 </script>

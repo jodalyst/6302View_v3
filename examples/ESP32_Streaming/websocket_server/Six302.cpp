@@ -112,8 +112,10 @@ bool CommManager::step(){
         if (build_iterator==-1){
           webSocketServer.sendData("BUILDING");
         }else if (build_iterator == incoming_count+outgoing_count){
-          if (csv) webSocketServer.sendData("END~CSV"); //end build but tack on csv option
-          else webSocketServer.sendData("END"); //end build with no csv option
+          // Will remove CSV choice for now...just hardcode it
+          //if (csv) webSocketServer.sendData("END~CSV"); //end build but tack on csv option
+//        //else 
+          webSocketServer.sendData("END"); //end build with no csv option
           connection_status = RUNNING; //we're done and into running mode.
         }else if (build_iterator){
           webSocketServer.sendData(build_strings[build_iterator]); //send each build string separately
