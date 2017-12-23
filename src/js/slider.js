@@ -25,6 +25,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     var toggle_element;
     var is_toggling = false;
     var spec_input;
+    var total_element;
     var setup = function(){
         //var handle = document.createElement("div");
         //handle.setAttribute("class","handle");
@@ -47,15 +48,15 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
         spec_input.setAttribute("max",max);
         spec_input.setAttribute("id",div_id+unique+"manual_input");
         spec_input.setAttribute("class","numerical_input");
-        var inlabel = document.createElement("span");
-        inlabel.innerHTML= "Value:";
-        holder.appendChild(inlabel);
+        //var inlabel = document.createElement("span");
+        //inlabel.innerHTML= "Value:";
+        //holder.appendChild(inlabel);
         holder.appendChild(spec_input); 
         if (toggle){
             noUiSlider.create(slider_element, {
-                start: [min,0,max],
+                start: [min,min,max],
                 connect: [true,false,false,true],
-                tooltips: [true, false, true],
+                tooltips: [false, false, false],
                 range: {
                     'min': min,
                     'max': max
@@ -77,7 +78,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             toggle_element = document.createElement("div");
             toggle_element.setAttribute("id", div_id+unique+"toggler");
             toggle_element.setAttribute("class","ckbx-style-8");
-            var toggle_in = document.createElement("div");
+            var toggle_in = document.createElement("input");
             toggle_in.setAttribute("type","checkbox");
             toggle_in.setAttribute("id", div_id+unique+"checkbox");
             toggle_in.setAttribute("value","1");
@@ -93,7 +94,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             });
         }else{
             noUiSlider.create(slider_element, {
-                start: [0],
+                start: min,
                 connect: true,
                 range: {
                     'min': min,

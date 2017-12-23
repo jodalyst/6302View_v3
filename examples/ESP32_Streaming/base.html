@@ -14,8 +14,8 @@
   <script src="/src/js/wNumb.js" ></script>
   <script src="/src/js/numerical_reporter.js" ></script>
   <link rel="stylesheet" type="text/css" href="/src/css/checkboxes.min.css">
-  <link rel="stylesheet" type="text/css" href="/src/css/gui.css">
   <link rel="stylesheet" type="text/css" href="/src/css/nouislider.min.css">
+  <link rel="stylesheet" type="text/css" href="/src/css/gui.css">
 </head>
 
 <body>
@@ -45,6 +45,7 @@
   <div class="cp-item" id="sliderbox1"></div>
   <div class="cp-item" id="sliderbox2"></div>
   <div class="cp-item" id="togglebox1"></div>
+  <div class="cp-item" id="togglebox2"></div>
   <!--<div class="cp-item" id="toggle1"></div>-->
 </div>
 
@@ -100,6 +101,7 @@ window.onload = function(){
     slider1 = new Slider("sliderbox1","Things",0,10,0.1,true,unique+2);
     slider2 = new Slider("sliderbox2","Kp",0,10,0.1,false,unique+3);
     toggle1 = new Toggle("togglebox1","Cat",unique+4);
+    toggle2 = new Toggle("togglebox2","Large Fire Trigger", unique+5);
     //pb1  = new PushButton("toggle1",123123,"Fire","Red","Black");
     timer = setInterval(function(){
         plot2.step([[mouseX],[mouseY]]);
