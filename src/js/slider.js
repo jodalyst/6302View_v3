@@ -40,6 +40,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     var val_holder;
     var current_period; //currently used period!
     var toggling; //holds the state of toggling
+    var event = new Event('change');
 
     var setup = function(){
         //var handle = document.createElement("div");
@@ -140,7 +141,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             toggle_label.innerHTML = "Toggle?";
             toggle_element = document.createElement("div");
             toggle_element.setAttribute("id", div_id+unique+"toggler");
-            toggle_element.setAttribute("class","ckbx-style-8");
+            toggle_element.setAttribute("class","ckbx-style-16 ckbx-medium");
             var toggle_in = document.createElement("input");
             toggle_in.setAttribute("type","checkbox");
             toggle_in.setAttribute("id", div_id+unique+"checkbox");
@@ -169,6 +170,8 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
                     var period_value = parseFloat(period_input.value);
                     console.log(period_value);
                     if (period_value===0 || period_value == null){
+                        period_input.value = 1;
+                        toggle_in.checked = false;
                         alert("Period must be greater than 0 seconds, child.");
                     }else{
                         toggle_timer = setInterval(function(){
@@ -222,6 +225,19 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     }
     setup();
 
+    if (toggle){
+        this.update = function(value){
+            slider_element.noUiSlider.set([null,parseFloat(value),null]); //update value except for limits 
+        };
+    }else{
+        this.update = function(value){
+            slider_element.noUiSlider.set([parseFloat(value)]); //update value except for limits 
+        };
+    }
+
+    this.value = function(){
+        return parseFloat(spec_input.value);
+    }
     spec_input.addEventListener('click', function(){
         if (toggle) slider_element.noUiSlider.set([null,this.value,null]);
         else  slider_element.noUiSlider.set([this.value]);
