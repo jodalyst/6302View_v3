@@ -26,6 +26,9 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     var is_toggling = false;
     var spec_input;
     var total_element;
+    var toggle_timer;
+    var bott_lim; 
+    var top_lim;
     var setup = function(){
         //var handle = document.createElement("div");
         //handle.setAttribute("class","handle");
@@ -70,7 +73,8 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             period_input.setAttribute("type","number");
             period_input.setAttribute("step",1);
             period_input.setAttribute("min",0);
-            period_input.setAttribute("max",max);
+            period_input.setAttribute("value",1);
+            period_input.setAttribute("max",100); //anything more is stupid
             period_input.setAttribute("id",div_id+unique+"period_input");
             period_input.setAttribute("class","numerical_input");
             period_container.appendChild(period_input);
@@ -91,6 +95,30 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             slider_element.noUiSlider.on('update',function(value) {
                 console.log(value);
                 spec_input.value = value[1];
+                bott_lim = parseFloat(value[0]);
+                top_lim = parseFloat(value[1]);
+            });
+            toggle_in.addEventListener("change",function(){
+                if (toggle_in.checked){
+                    var period_value = parseFloat(period_input);
+                    console.log(period_value);
+                    if (period_value===0){
+                        alert("Period must be greater than 0 seconds, child.");
+                    }else{
+                        toggle_timer = setInterval(function(){
+                            if (spec_input.value === top_lim){
+                                slider_element.noUiSlider.set([null,bott_lim,null]);
+                            }else{
+                                slider_element.noUiSlider.set([null,top_lim,null]);
+                            } 
+                    },1000*period_value);
+                    }
+                }else{
+                    clearInterval(toggle_timer);
+                }
+    //timer2 = setInterval(function(){
+    //    ws.send("Parameter Request");
+    //}, 50);
             });
         }else{
             noUiSlider.create(slider_element, {

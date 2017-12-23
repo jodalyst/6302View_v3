@@ -25,6 +25,7 @@ document.getElementById("grid_lock").addEventListener("change",function() {
     // check if checkbox is checked
     console.log(pckry);
     console.log(draggies);
+    console.log(document.getElementById("grid_lock").checked);
     var method = isDrag ? 'disable' : 'enable';
     draggies.forEach( function( draggie ) {
         draggie[ method ]();
