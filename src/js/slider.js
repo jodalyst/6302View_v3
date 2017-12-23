@@ -34,6 +34,8 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     var high_label; //will contain 
     var high_input;
     var val_holder;
+    var current_period; //currently used period!
+    var toggling; //holds the state of toggling
 
     var setup = function(){
         //var handle = document.createElement("div");
@@ -62,7 +64,6 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
         //inlabel.innerHTML= "Value:";
         //holder.appendChild(inlabel);
         holder.appendChild(val_holder); 
-        val_holder.appendChild(spec_input);
         if (toggle){
             noUiSlider.create(slider_element, {
                 start: [min,min,max],
@@ -89,6 +90,10 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             high_input.setAttribute("max",max);
             high_input.setAttribute("id",div_id+unique+"high_input");
             high_input.setAttribute("class","numerical_input");
+
+            val_holder.appendChild(low_input);
+            val_holder.appendChild(spec_input);
+            val_holder.appendChild(high_input);
             var period_container = document.createElement("span");
             var period_label = document.createElement("span");
             period_label.innerHTML = "Period(s):";
@@ -120,17 +125,20 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
                 console.log(value);
                 spec_input.value = value[1];
                 bott_lim = parseFloat(value[0]);
-                top_lim = parseFloat(value[1]);
+                low_input.value = value[0];
+                top_lim = parseFloat(value[2]);
+                high_input.value = value[2];
             });
             toggle_in.addEventListener("change",function(){
                 if (toggle_in.checked){
-                    var period_value = parseFloat(period_input);
+                    toggling = true;
+                    var period_value = parseFloat(period_input.value);
                     console.log(period_value);
-                    if (period_value===0){
+                    if (period_value===0 || period_value == null){
                         alert("Period must be greater than 0 seconds, child.");
                     }else{
                         toggle_timer = setInterval(function(){
-                            if (spec_input.value === top_lim){
+                            if (parseFloat(spec_input.value) === top_lim){
                                 slider_element.noUiSlider.set([null,bott_lim,null]);
                             }else{
                                 slider_element.noUiSlider.set([null,top_lim,null]);
@@ -138,13 +146,31 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
                     },1000*period_value);
                     }
                 }else{
+                    toggling = false;
                     clearInterval(toggle_timer);
                 }
-    //timer2 = setInterval(function(){
-    //    ws.send("Parameter Request");
-    //}, 50);
+            });
+
+            //listeners for manual typed changes:
+            /*
+            period_input.addEventListener('click', function(){
+                if (toggling){
+                    period_input.value = current_period;
+                    alert("Can't change period during active toggling!");
+                }else{
+                    current_period = parseFloat(period_input.value);
+                }
+            });
+            */
+            low_input.addEventListener('click', function(){
+                slider_element.noUiSlider.set([this.value,null,null]);
+            });
+            high_input.addEventListener('click', function(){
+                slider_element.noUiSlider.set([null,null,this.value]);
             });
         }else{
+
+            val_holder.appendChild(spec_input);
             noUiSlider.create(slider_element, {
                 start: min,
                 connect: true,
@@ -161,6 +187,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
 
     }
     setup();
+
     spec_input.addEventListener('click', function(){
         if (toggle) slider_element.noUiSlider.set([null,this.value,null]);
         else  slider_element.noUiSlider.set([this.value]);
