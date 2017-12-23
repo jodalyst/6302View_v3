@@ -19,20 +19,22 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     var socket = socket;
     var overall_div = document.getElementById(div_id);
     var holder;
+    var min = parseFloat(min);
+    var max = parseFloat(max);
     var slider_element;
     var toggle_element;
     var is_toggling = false;
     var spec_input;
     var setup = function(){
-        var handle = document.createElement("div");
-        handle.setAttribute("class","handle");
-        overall_div.appendChild(handle);
+        //var handle = document.createElement("div");
+        //handle.setAttribute("class","handle");
         holder = document.createElement("div");
         holder.setAttribute("id", div_id+unique+"_holder");
         holder.setAttribute("class", "slider_holder");
+        //holder.appendChild(handle);
         overall_div.appendChild(holder);
         var label_element = document.createElement("div");
-        label_element.setAttribute("class","slider_label");
+        label_element.setAttribute("class","slider_label handle");
         label_element.innerHTML = label;
         holder.appendChild(label_element);
         slider_element = document.createElement("div");
@@ -106,7 +108,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
 
     }
     setup();
-    spec_input.addEventListener('change', function(){
+    spec_input.addEventListener('click', function(){
         if (toggle) slider_element.noUiSlider.set([null,this.value,null]);
         else  slider_element.noUiSlider.set([this.value]);
     });

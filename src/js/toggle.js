@@ -1,4 +1,4 @@
-function Toggle(div_id,title,names,unique,socket=null){
+function Toggle(div_id,title,unique,names=["OFF","ON"],socket=null){
     var div_id = String(div_id);
     var title = String(title);
     var names = names; //should be 2-long array of values for when switch is low or high
@@ -22,7 +22,7 @@ function Toggle(div_id,title,names,unique,socket=null){
         value = document.createElement('div');
         title_disp.setAttribute("id",div_id+unique+"_title");
         value.setAttribute("id",div_id+unique+"_value");
-        title_disp.setAttribute("class","toggle_title");
+        title_disp.setAttribute("class","handle toggle_title");
         title_disp.innerHTML=title;
         value.innerHTML = names[0];
         value.setAttribute("class","toggle_value");

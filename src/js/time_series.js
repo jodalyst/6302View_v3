@@ -23,12 +23,12 @@ function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors
     var overall = document.createElement('div');
     overall.setAttribute("id", div_id+unique+"_overall");
     var handle = document.createElement("div");
-    handle.setAttribute("class","handle");
-    overall.appendChild(handle);
+    //handle.setAttribute("class","handle");
+    //overall.appendChild(handle);
     document.getElementById(div_id).appendChild(overall);
     var title_div = document.createElement('div');
     title_div.setAttribute("id", div_id+unique+"_title");
-    title_div.setAttribute("class","plot_title");
+    title_div.setAttribute("class","plot_title handle");
     title_div.innerHTML = title;
     overall.appendChild(title_div);
     var top_row = document.createElement('div');

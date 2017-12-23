@@ -31,14 +31,14 @@ svg {
 }
 
 .plot_title {
-    margin-top: 10px;
+    /*margin-top: 10px;*/
     text-align: center;
     font-weight: bold;
     font-size: 18px;
 }
 
 .slider_label {
-    margin-top: 10px;
+    /*margin-top: 10px;*/
     margin-bottom: 20px;
     text-align: center;
     font-weight: bold;
@@ -210,7 +210,7 @@ svg {
 .chart {
     position: relative;
     left: 0px;
-    margin: 10px;
+    margin: 0px, 10px, 10px, 10px;
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
@@ -256,13 +256,13 @@ svg {
 }
 
 .toggle_title {
-    margin-top: 10px;
+    /*margin-top: 10px;*/
     /*text-align: left;*/
     font-weight: bold;
     font-size: 18px;
 }
 .toggle_value {
-    margin-top: 10px;
+    /*margin-top: 10px;*/
     /*text-align: left;*/
     font-size: 14px;
 }
@@ -355,7 +355,7 @@ svg {
   background: #999;*/
   border: 2px solid;
   border-color: gray;
-  padding: 10px;
+  /*padding: 10px;*/
 }
 
 .cp-item:hover {
@@ -382,7 +382,7 @@ svg {
 
 
 .cp-item .handle {
-  position: absolute;
+  /*position: absolute;*/
   left: 0;
   top: 0;
   width: 100%;

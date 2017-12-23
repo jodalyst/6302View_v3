@@ -6,18 +6,21 @@
   <script src="/src/js/packery.pkgd.min.js"></script>
   <script src="/src/js/draggabilly.pkgd.min.js"></script>
   <script src="/src/js/socket.io.js"></script>
+  <script src="/src/js/nouislider.min.js" ></script>
   <script src="/src/js/time_series.js" ></script>
   <script src="/src/js/pushbutton.js" ></script>
   <script src="/src/js/toggle.js" ></script>
+  <script src="/src/js/slider.js" ></script>
   <script src="/src/js/wNumb.js" ></script>
   <script src="/src/js/numerical_reporter.js" ></script>
   <link rel="stylesheet" type="text/css" href="/src/css/checkboxes.min.css">
   <link rel="stylesheet" type="text/css" href="/src/css/gui.css">
+  <link rel="stylesheet" type="text/css" href="/src/css/nouislider.min.css">
 </head>
 
 <body>
 <h1>6302View</h1>
-<p><i>Enter the IP address printed from your microcontroller's Serial readout here, press Submit/Connect, and start working.<i></p>
+<p><i>Enter the IP address printed from your microcontroller's Serial readout here, press Submit/Connect, and start working.</i></p>
 <p>Local IP: <input type="text" name="ipaddress" id="ipaddress"/><button id="ipsubmit">Submit/Connect</button></p>
 <div style="height:100px;">
 <div style="float:left;width:200px;">
@@ -39,6 +42,9 @@
 <div class="cp">
   <div class="cp-item" id="plotbox"></div>
   <div class="cp-item" id="plotbox2"></div>
+  <div class="cp-item" id="sliderbox1"></div>
+  <div class="cp-item" id="sliderbox2"></div>
+  <div class="cp-item" id="togglebox1"></div>
   <!--<div class="cp-item" id="toggle1"></div>-->
 </div>
 
@@ -91,6 +97,9 @@ window.onload = function(){
     var unique = 456;
     plot = new Time_Series("plotbox",'Accelerations',PLOT_WIDTH, PLOT_HEIGHT,60,[-100,100],3,["green","yellow","blue"],unique);
     plot2 = new Time_Series("plotbox2",'Mouse Moves',PLOT_WIDTH, PLOT_HEIGHT,60,[0,1000],2,["red","blue"],unique+1);
+    slider1 = new Slider("sliderbox1","Things",0,10,0.1,true,unique+2);
+    slider2 = new Slider("sliderbox2","Kp",0,10,0.1,false,unique+3);
+    toggle1 = new Toggle("togglebox1","Cat",unique+4);
     //pb1  = new PushButton("toggle1",123123,"Fire","Red","Black");
     timer = setInterval(function(){
         plot2.step([[mouseX],[mouseY]]);
