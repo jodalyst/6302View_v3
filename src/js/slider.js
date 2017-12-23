@@ -33,6 +33,10 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     var low_input; //will contain value of lower limit
     var high_label; //will contain 
     var high_input;
+    var low_holder;
+    var high_holder;
+    var spec_holder;
+    var spec_label;
     var val_holder;
     var current_period; //currently used period!
     var toggling; //holds the state of toggling
@@ -53,6 +57,11 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
         slider_element.setAttribute("id", div_id+unique+"slider");
         holder.appendChild(slider_element); 
         val_holder = document.createElement("div");
+        val_holder.setAttribute("class","slider_values_holder");
+        spec_holder = document.createElement("div");
+        spec_label = document.createElement("div");
+        spec_label.innerHTML = "Set Value:";
+        spec_holder.setAttribute("class","slider_input_holder");
         spec_input = document.createElement("input");
         spec_input.setAttribute("type","number");
         spec_input.setAttribute("step",resolution);
@@ -60,6 +69,8 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
         spec_input.setAttribute("max",max);
         spec_input.setAttribute("id",div_id+unique+"manual_input");
         spec_input.setAttribute("class","numerical_input");
+        spec_holder.appendChild(spec_label);
+        spec_holder.appendChild(spec_input);
         //var inlabel = document.createElement("span");
         //inlabel.innerHTML= "Value:";
         //holder.appendChild(inlabel);
@@ -74,7 +85,11 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
                     'max': max
                 }
             });
+
+            low_holder = document.createElement("div");
             low_label = document.createElement("div"); 
+            low_holder.setAttribute("class","slider_input_holder");
+            low_label.innerHTML="Low Limit:";
             low_input = document.createElement("input");
             low_input.setAttribute("type","number");
             low_input.setAttribute("step",resolution);
@@ -82,7 +97,12 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             low_input.setAttribute("max",max);
             low_input.setAttribute("id",div_id+unique+"low_input");
             low_input.setAttribute("class","numerical_input");
-    
+            low_holder.appendChild(low_label);
+            low_holder.appendChild(low_input); 
+
+            high_holder = document.createElement("div");
+            high_label = document.createElement("div"); 
+            high_label.innerHTML="High Limit:";
             high_input = document.createElement("input");
             high_input.setAttribute("type","number");
             high_input.setAttribute("step",resolution);
@@ -91,11 +111,14 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             high_input.setAttribute("id",div_id+unique+"high_input");
             high_input.setAttribute("class","numerical_input");
 
-            val_holder.appendChild(low_input);
-            val_holder.appendChild(spec_input);
-            val_holder.appendChild(high_input);
-            var period_container = document.createElement("span");
-            var period_label = document.createElement("span");
+            high_holder.setAttribute("class","slider_input_holder");
+            high_holder.appendChild(high_label);
+            high_holder.appendChild(high_input);
+            val_holder.appendChild(low_holder);
+            val_holder.appendChild(spec_holder);
+            val_holder.appendChild(high_holder);
+            var period_container = document.createElement("div");
+            var period_label = document.createElement("div");
             period_label.innerHTML = "Period(s):";
             period_container.appendChild(period_label);
             var period_input = document.createElement("input");
@@ -106,8 +129,15 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             period_input.setAttribute("max",100); //anything more is stupid
             period_input.setAttribute("id",div_id+unique+"period_input");
             period_input.setAttribute("class","numerical_input");
+            period_container.appendChild(period_label);
             period_container.appendChild(period_input);
             //Build toggle part
+
+            toggle_box = document.createElement("div");
+            toggle_box.setAttribute("class","slider_values_holder");
+            toggle_holder = document.createElement("div");
+            toggle_label = document.createElement("div");
+            toggle_label.innerHTML = "Toggle?";
             toggle_element = document.createElement("div");
             toggle_element.setAttribute("id", div_id+unique+"toggler");
             toggle_element.setAttribute("class","ckbx-style-8");
@@ -119,8 +149,12 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             toggle_lab.setAttribute("for",div_id+unique+"checkbox");
             toggle_element.appendChild(toggle_in);
             toggle_element.appendChild(toggle_lab);
-            holder.appendChild(toggle_element);
-            holder.appendChild(period_container);
+            toggle_holder.appendChild(toggle_label);
+            toggle_holder.appendChild(toggle_element);
+            toggle_box.appendChild(toggle_holder);
+            toggle_box.appendChild(period_container); 
+            holder.appendChild(toggle_box);
+            //holder.appendChild(period_container);
             slider_element.noUiSlider.on('update',function(value) {
                 console.log(value);
                 spec_input.value = value[1];
@@ -170,7 +204,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             });
         }else{
 
-            val_holder.appendChild(spec_input);
+            val_holder.appendChild(spec_holder);
             noUiSlider.create(slider_element, {
                 start: min,
                 connect: true,

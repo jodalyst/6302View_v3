@@ -40,7 +40,7 @@ svg {
 
 .slider_label {
     /*margin-top: 10px;*/
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     text-align: center;
     font-weight: bold;
     font-size: 14px;
@@ -396,6 +396,19 @@ svg {
 .noUi-connect {
 	background: black;
 }
+
+
+.slider_input_holder{
+
+    float:left;
+}
+
+.slider_values_holder{
+    display: flex;
+    justify-content: space-evenly;
+    margin-top:5px;
+}
+
 /*
 .handle:hover {
   background: #09F;
