@@ -29,6 +29,12 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     var toggle_timer;
     var bott_lim; 
     var top_lim;
+    var low_label; //will contain text of "Lower Limit:"
+    var low_input; //will contain value of lower limit
+    var high_label; //will contain 
+    var high_input;
+    var val_holder;
+
     var setup = function(){
         //var handle = document.createElement("div");
         //handle.setAttribute("class","handle");
@@ -44,6 +50,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
         slider_element = document.createElement("div");
         slider_element.setAttribute("id", div_id+unique+"slider");
         holder.appendChild(slider_element); 
+        val_holder = document.createElement("div");
         spec_input = document.createElement("input");
         spec_input.setAttribute("type","number");
         spec_input.setAttribute("step",resolution);
@@ -54,7 +61,8 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
         //var inlabel = document.createElement("span");
         //inlabel.innerHTML= "Value:";
         //holder.appendChild(inlabel);
-        holder.appendChild(spec_input); 
+        holder.appendChild(val_holder); 
+        val_holder.appendChild(spec_input);
         if (toggle){
             noUiSlider.create(slider_element, {
                 start: [min,min,max],
@@ -65,6 +73,22 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
                     'max': max
                 }
             });
+            low_label = document.createElement("div"); 
+            low_input = document.createElement("input");
+            low_input.setAttribute("type","number");
+            low_input.setAttribute("step",resolution);
+            low_input.setAttribute("min",min);
+            low_input.setAttribute("max",max);
+            low_input.setAttribute("id",div_id+unique+"low_input");
+            low_input.setAttribute("class","numerical_input");
+    
+            high_input = document.createElement("input");
+            high_input.setAttribute("type","number");
+            high_input.setAttribute("step",resolution);
+            high_input.setAttribute("min",min);
+            high_input.setAttribute("max",max);
+            high_input.setAttribute("id",div_id+unique+"high_input");
+            high_input.setAttribute("class","numerical_input");
             var period_container = document.createElement("span");
             var period_label = document.createElement("span");
             period_label.innerHTML = "Period(s):";

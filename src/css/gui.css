@@ -2,6 +2,7 @@
 body {
     font-family: 'Open Sans', sans-serif;
     margin: 50px;
+    font-size: 10px;
 }
 
 h1 h2 h3 h4 {
@@ -34,7 +35,7 @@ svg {
     /*margin-top: 10px;*/
     text-align: center;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 14px;
 }
 
 .slider_label {
@@ -42,7 +43,7 @@ svg {
     margin-bottom: 5px;
     text-align: center;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 14px;
 }
 
 .number_holder {
@@ -60,7 +61,7 @@ svg {
     margin-top: 10px;
     text-align: center;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 14px;
     width: 100px;
 }
 
@@ -69,7 +70,7 @@ svg {
     padding: 10px;
     text-align: center;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 14px;
     width: 100px;
     overflow: hidden;
 }
@@ -259,19 +260,19 @@ svg {
     /*margin-top: 10px;*/
     text-align: center;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 14px;
 }
 .toggle_value {
     /*margin-top: 10px;*/
     /*text-align: left;*/
-    font-size: 14px;
+    font-size: 10px;
 }
 
 .pd_title {
     margin-top: 10px;
     text-align: left;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 14px;
 }
 
 .pd_holder {
@@ -329,9 +330,11 @@ svg {
 
 .numerical_input {
     /*padding: 7px;*/
-    margin: 15px 5px 5px;
+    /*margin: 15px 5px 5px;*/
     width: 70px;
-    font-size:12px;
+    font-size:10px;
+    display:block;
+    margin:0 auto;
 }
 
 .slider_holder{
@@ -391,7 +394,7 @@ svg {
 }
 
 .noUi-connect {
-	background: blue;
+	background: black;
 }
 /*
 .handle:hover {
