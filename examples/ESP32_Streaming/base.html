@@ -204,9 +204,10 @@ var inputEmit = function(){
         input += String(toggle_sliders[i].value());
         if (i!=toggle_sliders.length-1) input+=",";
     }
-    if (!array_equals(input,old_input)){
+    if (!array_equals(input,old_input) && ready_to_fire){
     console.log(input);
     old_input = input.slice(); //copy of array for next time.
+    ready_to_fire = false;
     //ws.send(input);
     }
 }
