@@ -3,6 +3,7 @@ body {
     font-family: 'Open Sans', sans-serif;
     margin: 50px;
     font-size: 10px;
+    background-color: #fcfff4;
 }
 
 h1 h2 h3 h4 {
@@ -145,10 +146,14 @@ svg {
     font-size: 10px;
     padding: 0px;
     width: 20px;
-    background-color: #FFFFFF;
+    background-color: #fcfff4;
     border-radius: 10px;
-    border: 1px solid;
-    border-color: black;
+    border: 0px;
+    /*border: 1px solid;
+    border-color: black;*/
+    -moz-box-shadow: 0 2px 5px 0 rgba(0,0,0,0.3);
+    -webkit-box-shadow:  0 2px 5px 0 rgba(0,0,0,0.3);
+    box-shadow:  0 2px 5px 0 rgba(0,0,0,0.3);
 }
 
 
@@ -361,6 +366,11 @@ svg {
     font-size:10px;
     display:block;
     margin:0 auto;
+}
+
+
+.numerical_input:focus {
+    outline: 0;
 }
 
 .slider_holder{
