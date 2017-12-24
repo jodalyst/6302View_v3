@@ -24,13 +24,14 @@ class CommManager
     WiFiServer server;
     WebSocketServer webSocketServer;
     WiFiClient client;
-    CommManager(int sp=1000, int rp=50000);
+    CommManager(int sp=1000, int rp=20000);
     bool step();
     bool connect(char*,char*);
     bool addSlider(char*,float,float,float,bool,float*);
     bool addToggle(char*,float*);
     bool addPlot(char*,float,float,int,float*,int plots=1);
     bool addCSV();
+    int overhead();
     float* incoming_data [INCOMING_LIMIT]; //no more than 20 params supported at this moment
     float* outgoing_data [OUTGOING_LIMIT]; //no more than 10 params supported
     int outgoing_size[OUTGOING_LIMIT]; //for knowing if single/multiple plots;
@@ -39,6 +40,7 @@ class CommManager
     bool handshake;
     bool client_connected;
     long unsigned int timeo;
+    int overhead_meas;
     int incoming_count; //number of data values that are coming in
     int outgoing_count; //number of data points to send out
     bool csv;

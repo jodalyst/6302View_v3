@@ -14,6 +14,7 @@ CommManager::CommManager(int sp, int rp) {
   handshake = false;
   client_connected = false;
   connection_status = IDLE;
+  overhead_meas = 0;
 }
 
 
@@ -86,6 +87,11 @@ bool CommManager::addCSV(){
  (1) Checks to see if there are any GUI-originating commands, and extracts them, updating variables embedded in main code
  (2) Updates the reporting counter and if needed, transmits the data currently existing in the system variables
  */
+int CommManager::overhead(){
+  return (int)overhead_meas;
+  
+}
+ 
 bool CommManager::step(){
   if (client_connected && handshake && client.available()) { // if there's bytes to read from the client (but only if it ,
     String data = webSocketServer.getData();
@@ -102,6 +108,7 @@ bool CommManager::step(){
     }
   }
   if(report_count >= report_num_iter){ //time to check connection and/or report data
+    if(VERBOSE)Serial.println(overhead());
     report_count =0; //reset
     //if (VERBOSE) Serial.print("Connection status:" ); Serial.println(connection_status);
     switch (connection_status){
@@ -179,6 +186,7 @@ bool CommManager::step(){
   }else{
     report_count++;
   }
+  overhead_meas = step_period-(micros()-timeo);
   while (micros()-timeo<step_period);
   timeo = micros(); //update time
 }

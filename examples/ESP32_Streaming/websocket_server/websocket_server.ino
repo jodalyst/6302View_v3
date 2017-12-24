@@ -43,10 +43,10 @@ void loop(){
   vms[0] = Kd*cos(millis()*0.01);
   vms[1] = -vms[0];
 
-  if(loop_count%1000==0){
-    Serial.print(Kp);Serial.print(" ");Serial.print(Kd);Serial.print(" ");Serial.print(desired);Serial.print(" ");Serial.println(ct_or_dt);
-  }
-  loop_count++;
+//  if(loop_count%1000==0){
+//    Serial.print(Kp);Serial.print(" ");Serial.print(Kd);Serial.print(" ");Serial.print(desired);Serial.print(" ");Serial.println(ct_or_dt);
+//  }
+//  loop_count++;
   cm.step(); //call once per loop, ideally at end of loop after everything has been done for current iteration. Blocks until step duration has occurred.
 }
 

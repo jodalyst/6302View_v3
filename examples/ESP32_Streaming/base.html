@@ -184,7 +184,6 @@ var MessageParser = function(evt){
             }
             break;
         case UPDATE:
-            console.log(received_msg);
             var data_array = received_msg.split("&"); //chop up the data string;
             if (data_array[0]==="I"){
                 var update_data = eval(data_array[1]);
@@ -193,8 +192,14 @@ var MessageParser = function(evt){
                 }
             }else if(data_array[0]==="O"){
                 var actual = eval(data_array[1]);
+                var count=0;
                 for (i=0;i<plots.length;i++){
-                    plots[i].step(actual[i]);
+                    var to_push = [];
+                    for(j=0;j<data_depth[i];j++){
+                        to_push.push([actual[count]]);
+                        count+=1;
+                    }
+                    plots[i].step(to_push);
                 }
             }
             break;
