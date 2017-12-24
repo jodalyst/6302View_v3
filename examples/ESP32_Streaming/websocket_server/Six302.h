@@ -42,7 +42,7 @@ class CommManager
     int incoming_count; //number of data values that are coming in
     int outgoing_count; //number of data points to send out
     bool csv;
-    char build_strings[INCOMING_LIMIT+OUTGOING_LIMIT+1][50];//50 char limit
+    char build_strings[INCOMING_LIMIT+OUTGOING_LIMIT+1][40];//40 char limit
     int step_period; //in microseconds
     int report_period; //in microseconds
     int report_count; //in steps

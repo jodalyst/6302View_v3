@@ -8,12 +8,14 @@ CommManager cm; //create instance of commManager
 float Kp;
 float Kd;
 float desired;
+float ct_or_dt;
 
 //Create outgoing variables for control and plotting...
 float angle;
 float omega;
 float dwdt;
 float vms[2];
+int loop_count;
 
 void setup()
 {
@@ -23,49 +25,30 @@ void setup()
     cm.addSlider("Kp",-5,5,0.1,false, &Kp); //add a slider called Kp and link it to variable Kp
     cm.addSlider("Kd",-5,5,0.1,false, &Kd); //add a slider called Kd and link it to variable Kd
     cm.addSlider("Desired",-5,5,0.1,true, &desired); // similar...
+    cm.addToggle("CT or DT", &ct_or_dt); 
     cm.addPlot("Angle",-3,3,100, &angle); //add a plotter called "Angle" and link it to variable angle
     cm.addPlot("Omega",-50,50,100, &omega); //similar...
     cm.addPlot("dwdt",-10,10,100, &dwdt); //similar...
     cm.addPlot("Voltages",0,3,100, vms,2); //add a plotter (two plots in same window) called "Voltages" and link to vms array
+    loop_count = 0;
 }
 
 void loop(){
 
   //User code here!  take in readings, update values, etc...should be all good.
-  
-  cm.step(); //call once per loop. Blocks until step duration has occurred.
+
+  angle = cos(millis()*0.01);
+  omega = Kd;
+  dwdt = ct_or_dt?cos(millis()*0.1):1;
+  vms[0] = Kd*cos(millis()*0.01);
+  vms[1] = -vms[0];
+
+  if(loop_count%1000==0){
+    Serial.print(Kp);Serial.print(" ");Serial.print(Kd);Serial.print(" ");Serial.print(desired);Serial.print(" ");Serial.println(ct_or_dt);
+  }
+  loop_count++;
+  cm.step(); //call once per loop, ideally at end of loop after everything has been done for current iteration. Blocks until step duration has occurred.
 }
 
 
 
-
-
-
-
-
-//
-//void loop(){
-// client = server.available();   // listen for incoming clients
-//  if (client) {                             // if you get a client,
-//    String currentLine = "";                // make a String to hold incoming data from the client
-//    if (client.connected() && webSocketServer.handshake(client)){
-//      Serial.println("Handshake happened:");
-//      while (client.connected() ) {            // loop while the client's connected
-//        timeo = micros();
-//        if (client.available()) {             // if there's bytes to read from the client,
-//          String data = webSocketServer.getData();
-//        //String z = String(analogRead(A0)*0.01);
-//        String y = String(analogRead(A3)*0.01);
-//        String x = String(analogRead(A6)*0.01);
-//        String z = String(cos(60*micros()*1e-6));
-//        //String sdata = "42[\"update_456\",[["+x+"],["+y+"],["+z+"]]]";
-//        String sdata = "[["+x+"],["+y+"],["+z+"]]";
-//        unsigned long start = micros(); 
-//        webSocketServer.sendData(sdata);
-//        Serial.println(micros()-start);
-//        }
-//        while (micros()-timeo<1000);//wait
-//      }
-//    }
-//  }
-//}

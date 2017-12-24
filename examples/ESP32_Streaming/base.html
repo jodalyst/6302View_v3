@@ -40,14 +40,7 @@
 </div>
 </div>
 
-<div class="cp">
-  <div class="cp-item" id="plotbox"></div>
-  <div class="cp-item" id="plotbox2"></div>
-  <div class="cp-item" id="sliderbox1"></div>
-  <div class="cp-item" id="sliderbox2"></div>
-  <div class="cp-item" id="togglebox1"></div>
-  <div class="cp-item" id="togglebox2"></div>
-  <!--<div class="cp-item" id="toggle1"></div>-->
+<div id="gui_land" class="cp">
 </div>
 
 
@@ -81,15 +74,18 @@ var csv_header = [];
 //
 var toggle_sliders = []; //array of hooks for toggle and slider objects
 var data_depth = []; //1 for 1-plots, n for n-plots
-var div_elements = [];
+var div_list = [];
+var unique_counter = 0;
 var plots = []; //array of hooks for plot objects
 
 var old_input = [];
 
 var ws;
 
+var gui_land = document.getElementById("gui_land"); //where draggables end up!
+
 window.onload = function(){
-    var unique = 456;
+    /*
     plot = new Time_Series("plotbox",'Accelerations',PLOT_WIDTH, PLOT_HEIGHT,60,[-100,100],3,["green","yellow","blue"],unique);
     plot2 = new Time_Series("plotbox2",'Mouse Moves',PLOT_WIDTH, PLOT_HEIGHT,60,[0,1000],2,["red","blue"],unique+1);
     toggle_sliders.push(new Slider("sliderbox1","Things",0,10,0.1,true,unique+2));
@@ -99,6 +95,7 @@ window.onload = function(){
     timer = setInterval(function(){
         plot2.step([[mouseX],[mouseY]]);
     }, 10);
+    */
     document.addEventListener("ui_change", inputEmit);
 }
 
@@ -111,7 +108,9 @@ document.getElementById("ipsubmit").addEventListener("mousedown",function(){
       // Web Socket is connected, send data using send()
       console.log("web socket established");
     }; 
-    ws.onmessage = MessageParser(evt);
+    ws.onmessage = function (evt) {
+        MessageParser(evt);
+    };
  
     ws.onclose = function(){ 
       // websocket is closed.
@@ -122,7 +121,7 @@ document.getElementById("ipsubmit").addEventListener("mousedown",function(){
 
 var MessageParser = function(evt){
     var received_msg = evt.data;
-    console.log(received_msg);
+    //console.log(received_msg);
     switch (system_state){
         case IDLE:
             if (received_msg==="BUILDING"){
@@ -133,13 +132,18 @@ var MessageParser = function(evt){
                 unique_counter = 0;
                 csv_header = ["Time"];
             }
+            break;
         case BUILDING:
             if (received_msg==="END"){
                 system_state = UPDATE;
+                document.dispatchEvent(ui_change);
             }else{
                 var newdiv = document.createElement("div"); //new div to house new widget
                 newdiv.setAttribute("id","box_"+String(unique_counter)); //give it unique identifier
                 div_list.push(newdiv); //push to div list (for overall DOM management
+                newdiv.setAttribute("class","cp-item");
+                gui_land.appendChild(newdiv);
+                console.log(received_msg);
                 var build_array = received_msg.split("&"); //chop up the build string
                 switch (build_array[0]){ //check the first part of build array for type of widget to build
                     case "S": //slider
@@ -151,11 +155,13 @@ var MessageParser = function(evt){
                         var toggle = build_array[5]==="1"?true:false;
                         toggle_sliders.push(new Slider("box_"+String(unique_counter),title,low,high,res,toggle,unique_counter));
                         csv_header.push(title);
+                        break;
                     case "T": //toggle
                         console.log("adding toggle");
                         var title = build_array[1];
                         csv_header.push(title);
                         toggle_sliders.push(new Toggle("box_"+String(unique_counter),title,unique_counter));
+                        break;
                     case "P": //plot:
                         console.log("adding plot");
                         var title = build_array[1];
@@ -172,10 +178,13 @@ var MessageParser = function(evt){
                             plots.push(new Time_Series("box_"+String(unique_counter),title,PLOT_WIDTH,PLOT_HEIGHT,h_count,[v_low,v_high],trace_count,colors,unique_counter));
                             for (i = 0; i<trace_count;i++) csv_header.push(title+"_"+String(i));
                         }
+                        break;
                 }
                 unique_counter+=1;
             }
+            break;
         case UPDATE:
+            console.log(received_msg);
             var data_array = received_msg.split("&"); //chop up the data string;
             if (data_array[0]==="I"){
                 var update_data = eval(data_array[1]);
@@ -188,9 +197,7 @@ var MessageParser = function(evt){
                     plots[i].step(actual[i]);
                 }
             }
-
-        case RUNNING:
-
+            break;
     }
 };
 
@@ -212,7 +219,7 @@ var inputEmit = function(){
     console.log(input);
     old_input = input.slice(); //copy of array for next time.
     ready_to_fire = false;
-    //ws.send(input);
+    ws.send(input);
     }
 }
 

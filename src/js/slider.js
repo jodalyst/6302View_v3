@@ -17,6 +17,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     var color = color;
     var unique = String(unique); //unique identifying number
     var socket = socket;
+    console.log(div_id);
     var overall_div = document.getElementById(div_id);
     var holder;
     var min = parseFloat(min);

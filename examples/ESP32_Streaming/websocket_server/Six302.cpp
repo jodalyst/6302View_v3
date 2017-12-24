@@ -68,7 +68,7 @@ bool CommManager::addToggle(char* name, float* linker){
     return false;
   }
   int n = sprintf(build_strings[incoming_count+outgoing_count],"T&%s",name);
-  if(VERBOSE)Serial.print(" Buildstring for Slider: "); Serial.print(n); Serial.println(" characters long");
+  if(VERBOSE)Serial.print(" Buildstring for Toggle: "); Serial.print(n); Serial.println(" characters long");
   incoming_data[incoming_count] = linker; //remember linked-to-variable
   incoming_count ++; //incrememnt the known amount of outgoing data 
   return true;
@@ -89,18 +89,21 @@ bool CommManager::addCSV(){
 bool CommManager::step(){
   if (client_connected && handshake && client.available()) { // if there's bytes to read from the client (but only if it ,
     String data = webSocketServer.getData();
-    int current_index=0;
-    for (int count=0; count<incoming_count;count++){
-      int new_index = data.indexOf("~",current_index);
-      String raw;
-      if (new_index==-1) raw = data.substring(current_index);
-      else raw = data.substring(current_index,new_index);
-      *incoming_data[count] = raw.toFloat(); //convert to float and assign to appropriate user variable
-      current_index = new_index; 
+    if (connection_status ==RUNNING){
+      int current_index=0;
+      for (int count=0; count<incoming_count;count++){
+        int new_index = data.indexOf(",",current_index+1);
+        String raw;
+        if (new_index==-1) raw = data.substring(current_index+1);
+        else raw = data.substring(current_index+1,new_index);
+        *incoming_data[count] = raw.toFloat(); //convert to float and assign to appropriate user variable
+        current_index = new_index; 
+      }
     }
   }
   if(report_count >= report_num_iter){ //time to check connection and/or report data
     report_count =0; //reset
+    //if (VERBOSE) Serial.print("Connection status:" ); Serial.println(connection_status);
     switch (connection_status){
       case IDLE:
         client = server.available();
@@ -109,6 +112,7 @@ bool CommManager::step(){
           handshake = false; //reset
           connection_status = NEW_CLIENT;
         }
+        break;
       case NEW_CLIENT:
         if (client.connected()){
           client_connected = true;
@@ -116,6 +120,7 @@ bool CommManager::step(){
         }else{
           connection_status = IDLE; //failure
         }
+        break;
       case CONNECTED:
         if (webSocketServer.handshake(client)){
           handshake = true;
@@ -124,7 +129,9 @@ bool CommManager::step(){
         } else{
           connection_status = IDLE; //failure
         }
+        break;
       case BUILDING:
+        if (VERBOSE) Serial.print(build_iterator);Serial.print(" "); Serial.println(incoming_count+outgoing_count);
         if (build_iterator==-1){
           webSocketServer.sendData("BUILDING");
         }else if (build_iterator == incoming_count+outgoing_count){
@@ -133,36 +140,41 @@ bool CommManager::step(){
 //        //else 
           webSocketServer.sendData("END"); //end build with no csv option
           connection_status = UPDATING; //we're done and into running mode.
-        }else if (build_iterator){
+        }else{
           webSocketServer.sendData(build_strings[build_iterator]); //send each build string separately
+          if (VERBOSE)Serial.println(build_strings[build_iterator]);
         }
         build_iterator++;
+        break;
       case UPDATING:
         if (client.connected()){ //check if we're still connected!
           sprintf(data_to_send,"I&[");
           for (int i = 0; i<incoming_count; i++){
-            sprintf(data_to_send+strlen(data_to_send),"[%.2f]%s",*(incoming_data[i]),i<incoming_count-1?",":"");
+            sprintf(data_to_send+strlen(data_to_send),"%.2f%s",*(incoming_data[i]),i<incoming_count-1?",":"");
           }
           sprintf(data_to_send+strlen(data_to_send),"]");
           webSocketServer.sendData(data_to_send);
           connection_status = RUNNING;
         }
+        break;
       case RUNNING:
         if (client.connected()){ //check if we're still connected!
           sprintf(data_to_send,"O&[");
           for (int i=0;i<outgoing_count; i++){
-            sprintf(data_to_send+strlen(data_to_send),"[");
+            //sprintf(data_to_send+strlen(data_to_send),"[");
             for (int j=0;j<outgoing_size[i];j++){
-              sprintf(data_to_send+strlen(data_to_send),"[%.2f]%s",*(outgoing_data[i]+j),j<outgoing_size[i]-1?",":"");
+              sprintf(data_to_send+strlen(data_to_send),"%.2f%s",*(outgoing_data[i]+j),j<outgoing_size[i]-1?",":"");
             }
-            sprintf(data_to_send+strlen(data_to_send),"]%s",i<outgoing_count-1?",":"");
+            sprintf(data_to_send+strlen(data_to_send),"%s",i<outgoing_count-1?",":"");
           }
+          sprintf(data_to_send+strlen(data_to_send),"]");
           webSocketServer.sendData(data_to_send);
         }else{ //lost our connection
           client_connected = false; //done
           handshake = false; //done
           connection_status = IDLE;
-        }  
+        }
+        break;
     }
   }else{
     report_count++;
