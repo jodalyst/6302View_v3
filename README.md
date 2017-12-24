@@ -41,3 +41,15 @@ Data should immediately start streaming (this was designed using a three axis an
 
 
 *Note the ESP32-Websocket Library is a lightly-modified version of the ESP8266 Websocket Library (found <a href="https://github.com/morrissinger/ESP8266-Websocket" target="_blank">here</a>)
+
+
+
+## Things to Do:
+
+
+* Persistent values on user inputs between loads
+* CSV implementation
+* Draggablility Fix
+* Remove needless console.log
+
+
