@@ -219,7 +219,6 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             slider_element.noUiSlider.on('update',function(value) {
                 spec_input.value = value;
                 document.dispatchEvent(ui_change);        
-                console.log("change slider");
             });
         }
 

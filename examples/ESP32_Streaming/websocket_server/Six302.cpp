@@ -36,26 +36,42 @@ bool CommManager::connect(char* ssid,char* password){
     server.begin();
 }
 
-bool CommManager::addSlider(char* name,float low,float high,float step_size, float* linker){
-  int n = sprintf(build_strings[incoming_count+outgoing_count],"S&%s&%.3g&%.3g&%.3g",name,low,high,step_size);
+bool CommManager::addSlider(char* name,float low,float high,float step_size,bool toggle, float* linker){
+  if(strchr(name,'&')!=NULL){
+    if(VERBOSE)Serial.println("Name of GUI Entity cannot contain & symbol!");
+    return false;
+  }
+  int toggle_int = toggle?1:0;
+  int n = sprintf(build_strings[incoming_count+outgoing_count],"S&%s&%.3g&%.3g&%.3g&%d",name,low,high,step_size,toggle_int);
   if(VERBOSE)Serial.print(" Buildstring for Slider: "); Serial.print(n); Serial.println(" characters long");
   incoming_data[incoming_count] = linker; //remember linked-to-variable
   incoming_count ++; //incrememnt the known amount of outgoing data
+  return true;
 }
 
 bool CommManager::addPlot(char* name,float v_low,float v_high,int steps_displayed, float* linker, int plots){
+  if(strchr(name,'&')!=NULL){
+    if(VERBOSE)Serial.println("Name of GUI Entity cannot contain & symbol!");
+    return false;
+  }
   int n = sprintf(build_strings[incoming_count+outgoing_count],"P&%s&%d&%.3g&%.3g&%d",name,plots,v_low,v_high,steps_displayed);
   if(VERBOSE)Serial.print(" Buildstring for Plot: "); Serial.print(n); Serial.println(" characters long");
   outgoing_data[outgoing_count] = linker; //store and remember address to tied variable
   outgoing_size[outgoing_count] = plots; //store and remember if single/multiple plot
   outgoing_count ++;
+  return true;
 }
 
 bool CommManager::addToggle(char* name, float* linker){
+  if(strchr(name,'&')!=NULL){
+    if(VERBOSE)Serial.println("Name of GUI Entity cannot contain & symbol!");
+    return false;
+  }
   int n = sprintf(build_strings[incoming_count+outgoing_count],"T&%s",name);
   if(VERBOSE)Serial.print(" Buildstring for Slider: "); Serial.print(n); Serial.println(" characters long");
   incoming_data[incoming_count] = linker; //remember linked-to-variable
   incoming_count ++; //incrememnt the known amount of outgoing data 
+  return true;
 }
 
 /*Checks if CSV has been added yet...if not it adds to build string

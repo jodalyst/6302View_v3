@@ -92,7 +92,10 @@ var system_state = IDLE;
 var data_for_csv=[];
 
 var toggle_sliders = []; //array of hooks for toggle and slider objects
+var div_elements = [];
 var plots = []; //array of hooks for plot objects
+
+var old_input = [];
 
 window.onload = function(){
     var unique = 456;
@@ -141,14 +144,44 @@ var MessageParser = function(evt){
         case IDLE:
             if (received_msg==="BUILDING"){
                 system_state = BUILDING;
-                sliders = [];
-                toggles = [];
+                toggle_sliders = [];
                 plots = [];
                 WipeGUI();
+                unique_counter = 0;
             }
         case BUILDING:
             if (received_msg==="END"){
                 system_state = UPDATE;
+            }else{
+                var newdiv = document.createElement("div");
+                newdiv.setAttribute("id","box_"+String(unique_counter));
+                div_list.push(newdiv);
+                var build_array = received_msg.split("&");
+                switch (build_array[0]){
+                    case "S":
+                        var title = build_array[1];
+                        var low = parseFloat(build_array[2]);
+                        var high = parseFloat(build_array[3]);
+                        var res = parseFloat(build_array[4]);
+                        var toggle = build_array[5]==="1"?true:false;
+                        toggle_sliders.push(new Slider("box_"+String(unique_counter),title,low,high,res,toggle,unique_counter));
+                    case "T":
+                        var title = build_array[1];
+                        toggle_sliders.push(new Toggle("box_"+String(unique_counter),title,unique_counter));
+                    case "P":
+                        var title = build_array[1];
+                        var trace_count = parseFloat(build_array[2]);
+                        var v_low = parseFloat(build_array[3]);
+                        var v_high = parseFloat(build_array[4]);
+                        var h_count = parseInt(build_array[5]);
+                        if (trace_count ===1){
+                            plots.push(new Time_Series("box_"+String(unique_counter),title,PLOT_WIDTH,PLOT_HEIGHT,h_count,[v_low,v_high],1,["blue"],unique_counter));
+                        }else{
+                            var colors = standard_colors.slice(0,trace_count+1);
+                            plots.push(new Time_Series("box_"+String(unique_counter),title,PLOT_WIDTH,PLOT_HEIGHT,h_count,[v_low,v_high],trace_count,colors,unique_counter));
+                        }
+                }
+                unique_counter+=1;
             }
         case UPDATE:
 
@@ -158,16 +191,24 @@ var MessageParser = function(evt){
 };
 
 var WipeGUI = function(){
+    var len = div_list.length;
+    for (var i = 0; i<len; i++){
+        var to_junk = div_list.pop();
+        to_junk.remove();
+    }
 };
 
 var inputEmit = function(){
-    var output = "";
+    var input = "";
     for (i=0; i<toggle_sliders.length; i++){
-        output += String(toggle_sliders[i].value());
-        if (i!=toggle_sliders.length-1) output+=",";
+        input += String(toggle_sliders[i].value());
+        if (i!=toggle_sliders.length-1) input+=",";
     }
-    console.log(output);
-    //ws.send(output);
+    if (!array_equals(input,old_input)){
+    console.log(input);
+    old_input = input.slice(); //copy of array for next time.
+    //ws.send(input);
+    }
 }
 
 

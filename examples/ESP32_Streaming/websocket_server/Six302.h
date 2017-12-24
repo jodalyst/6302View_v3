@@ -4,6 +4,7 @@
 #include <WiFi.h>
 #include <WebSocketServer.h>
 #include <stdio.h>
+#include <string.h>
 
 
 #define VERBOSE true
@@ -26,7 +27,7 @@ class CommManager
     CommManager(int sp=1000, int rp=50000);
     bool step();
     bool connect(char*,char*);
-    bool addSlider(char*,float,float,float,float*);
+    bool addSlider(char*,float,float,float,bool,float*);
     bool addToggle(char*,float*);
     bool addPlot(char*,float,float,int,float*,int plots=1);
     bool addCSV();
