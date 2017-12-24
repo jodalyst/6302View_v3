@@ -76,7 +76,8 @@ var system_state = IDLE;
 
 //data for building up csv logs:
 var data_for_csv=[];
-
+var recording_csv = false;
+var csv_header = [];
 //
 var toggle_sliders = []; //array of hooks for toggle and slider objects
 var data_depth = []; //1 for 1-plots, n for n-plots
@@ -130,6 +131,7 @@ var MessageParser = function(evt){
                 plots = [];
                 WipeGUI();
                 unique_counter = 0;
+                csv_header = ["Time"];
             }
         case BUILDING:
             if (received_msg==="END"){
@@ -148,9 +150,11 @@ var MessageParser = function(evt){
                         var res = parseFloat(build_array[4]);
                         var toggle = build_array[5]==="1"?true:false;
                         toggle_sliders.push(new Slider("box_"+String(unique_counter),title,low,high,res,toggle,unique_counter));
+                        csv_header.push(title);
                     case "T": //toggle
                         console.log("adding toggle");
                         var title = build_array[1];
+                        csv_header.push(title);
                         toggle_sliders.push(new Toggle("box_"+String(unique_counter),title,unique_counter));
                     case "P": //plot:
                         console.log("adding plot");
@@ -162,9 +166,11 @@ var MessageParser = function(evt){
                         var h_count = parseInt(build_array[5]);
                         if (trace_count ===1){
                             plots.push(new Time_Series("box_"+String(unique_counter),title,PLOT_WIDTH,PLOT_HEIGHT,h_count,[v_low,v_high],1,["blue"],unique_counter));
+                            csv_header.push(title);
                         }else{
                             var colors = standard_colors.slice(0,trace_count+1);
                             plots.push(new Time_Series("box_"+String(unique_counter),title,PLOT_WIDTH,PLOT_HEIGHT,h_count,[v_low,v_high],trace_count,colors,unique_counter));
+                            for (i = 0; i<trace_count;i++) csv_header.push(title+"_"+String(i));
                         }
                 }
                 unique_counter+=1;
@@ -172,13 +178,15 @@ var MessageParser = function(evt){
         case UPDATE:
             var data_array = received_msg.split("&"); //chop up the data string;
             if (data_array[0]==="I"){
+                var update_data = eval(data_array[1]);
                 for (i=0; i<toggle_sliders.length;i++){
-                    toggle_sliders[i].update(parseFloat(data_array[1+i]));
+                    toggle_sliders[i].update(update_data[i]);
                 }
             }else if(data_array[0]==="O"){
                 var actual = eval(data_array[1]);
-                for (i=0;i
-
+                for (i=0;i<plots.length;i++){
+                    plots[i].step(actual[i]);
+                }
             }
 
         case RUNNING:
