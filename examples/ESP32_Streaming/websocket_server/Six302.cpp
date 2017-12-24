@@ -119,7 +119,7 @@ bool CommManager::step(){
       case CONNECTED:
         if (webSocketServer.handshake(client)){
           handshake = true;
-          connection_status = HANDSHOOK;
+          connection_status = BUILDING;
           build_iterator = -1;
         } else{
           connection_status = IDLE; //failure
@@ -132,20 +132,30 @@ bool CommManager::step(){
           //if (csv) webSocketServer.sendData("END~CSV"); //end build but tack on csv option
 //        //else 
           webSocketServer.sendData("END"); //end build with no csv option
-          connection_status = RUNNING; //we're done and into running mode.
+          connection_status = UPDATING; //we're done and into running mode.
         }else if (build_iterator){
           webSocketServer.sendData(build_strings[build_iterator]); //send each build string separately
         }
         build_iterator++;
+      case UPDATING:
+        if (client.connected()){ //check if we're still connected!
+          sprintf(data_to_send,"I&[");
+          for (int i = 0; i<incoming_count; i++){
+            sprintf(data_to_send+strlen(data_to_send),"[%.2f]%s",*(incoming_data[i]),i<incoming_count-1?",":"");
+          }
+          sprintf(data_to_send+strlen(data_to_send),"]");
+          webSocketServer.sendData(data_to_send);
+          connection_status = RUNNING;
+        }
       case RUNNING:
         if (client.connected()){ //check if we're still connected!
-          sprintf(data_to_send,"[");
+          sprintf(data_to_send,"O&[");
           for (int i=0;i<outgoing_count; i++){
             sprintf(data_to_send+strlen(data_to_send),"[");
             for (int j=0;j<outgoing_size[i];j++){
-              sprintf(data_to_send+strlen(data_to_send),"[%.2f],",*(outgoing_data[i]+j));
+              sprintf(data_to_send+strlen(data_to_send),"[%.2f]%s",*(outgoing_data[i]+j),j<outgoing_size[i]-1?",":"");
             }
-            sprintf(data_to_send+strlen(data_to_send),"],");
+            sprintf(data_to_send+strlen(data_to_send),"]%s",i<outgoing_count-1?",":"");
           }
           webSocketServer.sendData(data_to_send);
         }else{ //lost our connection

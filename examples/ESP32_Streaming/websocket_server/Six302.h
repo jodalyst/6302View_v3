@@ -14,8 +14,8 @@
 #define IDLE 0
 #define NEW_CLIENT 1
 #define CONNECTED 2
-#define HANDSHOOK 3
-#define BUILDING 4
+#define BUILDING 3
+#define UPDATING 4
 #define RUNNING 5
 
 class CommManager
