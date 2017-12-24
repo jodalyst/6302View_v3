@@ -106,7 +106,7 @@ svg {
 .grid path {
     stroke-width: 0;
 }
-
+/*
 .scaler {
     margin: 3px;
     font-size: 10px;
@@ -119,6 +119,49 @@ svg {
     -moz-box-shadow: inset 0px -5px 10px #dfdfdf;
     -webkit-box-shadow: inset 0px -5px 10px #dfdfdf;
     box-shadow: inset 0px -5px 10px #dfdfdf;
+}
+
+.scaler:active {
+    background-color: #00ff1e;
+    -moz-box-shadow: inset 0px -5px 10px #207e2b;
+    -webkit-box-shadow: inset 0px -5px 10px #207e2b;
+    box-shadow: inset 0px -5px 10px #207e2b;
+}
+
+.scaler:hover {
+    background-color: #dfdfdf;
+    -moz-box-shadow: inset 0px -5px 10px #c5c5c5;
+    -webkit-box-shadow: inset 0px -5px 10px #c5c5c5;
+    box-shadow: inset 0px -5px 10px #c5c5c5;
+}
+
+.scaler:focus {
+    outline: 0;
+}
+*/
+
+.scaler {
+    margin: 3px;
+    font-size: 10px;
+    padding: 0px;
+    width: 20px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    border: 1px solid;
+    border-color: black;
+}
+
+
+.scaler:hover {
+    background-color: #dfdfdf;
+}
+
+.scaler:active {
+    background-color: #00ff1e;
+}
+
+.scaler:focus {
+    outline: 0;
 }
 
 .trigger {
@@ -153,23 +196,6 @@ svg {
     outline: 0;
 }
 
-.scaler:active {
-    background-color: #00ff1e;
-    -moz-box-shadow: inset 0px -5px 10px #207e2b;
-    -webkit-box-shadow: inset 0px -5px 10px #207e2b;
-    box-shadow: inset 0px -5px 10px #207e2b;
-}
-
-.scaler:hover {
-    background-color: #dfdfdf;
-    -moz-box-shadow: inset 0px -5px 10px #c5c5c5;
-    -webkit-box-shadow: inset 0px -5px 10px #c5c5c5;
-    box-shadow: inset 0px -5px 10px #c5c5c5;
-}
-
-.scaler:focus {
-    outline: 0;
-}
 
 .v_button_container {
     display: -ms-flexbox;
@@ -357,7 +383,7 @@ svg {
   /*width: 100px;
   height: 100px;
   background: #999;*/
-  border: 2px solid;
+  border: 1px solid;
   border-color: gray;
   /*padding: 10px;*/
 }
