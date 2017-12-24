@@ -91,29 +91,29 @@ var system_state = IDLE;
 
 var data_for_csv=[];
 
-var sliders = []; //array of hooks to slider objects.
-var toggles = []; //array of hooks for toggle objects
+var toggle_sliders = []; //array of hooks for toggle and slider objects
 var plots = []; //array of hooks for plot objects
 
 window.onload = function(){
     var unique = 456;
     plot = new Time_Series("plotbox",'Accelerations',PLOT_WIDTH, PLOT_HEIGHT,60,[-100,100],3,["green","yellow","blue"],unique);
     plot2 = new Time_Series("plotbox2",'Mouse Moves',PLOT_WIDTH, PLOT_HEIGHT,60,[0,1000],2,["red","blue"],unique+1);
-    slider1 = new Slider("sliderbox1","Things",0,10,0.1,true,unique+2);
-    slider2 = new Slider("sliderbox2","Kp",0,10,0.1,false,unique+3);
-    toggle1 = new Toggle("togglebox1","Cat",unique+4);
-    toggle2 = new Toggle("togglebox2","Large Fire Trigger", unique+5);
-    //pb1  = new PushButton("toggle1",123123,"Fire","Red","Black");
+    toggle_sliders.push(new Slider("sliderbox1","Things",0,10,0.1,true,unique+2));
+    toggle_sliders.push(new Slider("sliderbox2","Kp",0,10,0.1,false,unique+3));
+    toggle_sliders.push(new Toggle("togglebox1","Cat",unique+4));
+    toggle_sliders.push(new Toggle("togglebox2","Large Fire Trigger", unique+5));
     timer = setInterval(function(){
         plot2.step([[mouseX],[mouseY]]);
     }, 10);
+    document.addEventListener("ui_change", inputEmit);
 }
 
+var ws;
 
 document.getElementById("ipsubmit").addEventListener("mousedown",function(){
     var ip = document.getElementById("ipaddress").value; //collect the ip address
     //Should add in some checker/an alert that comes up if you can't actually connect.
-    var ws = new WebSocket("ws://"+ip); //create new websocket to the ip of interest
+    ws = new WebSocket("ws://"+ip); //create new websocket to the ip of interest
     ws.onopen = function(){
       // Web Socket is connected, send data using send()
       ws.send("Parameter Request");
@@ -125,15 +125,13 @@ document.getElementById("ipsubmit").addEventListener("mousedown",function(){
       console.log(received_msg);
       plot.step(eval(received_msg));
     };
-    //timer2 = setInterval(function(){
-    //    ws.send("Parameter Request");
-    //}, 50);
  
     ws.onclose = function(){ 
       // websocket is closed.
       console.log("Connection is closed..."); 
     };
 });
+
 
 var MessageParser = function(evt){
     console.log("message received");
@@ -160,52 +158,16 @@ var MessageParser = function(evt){
 };
 
 var WipeGUI = function(){
-
-
 };
 
-/* Based off of code from here:
-https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
-*/
-var ExportCSV = function(filename, rows) {
-    var processRow = function (row) {
-        var finalVal = '';
-        for (var j = 0; j < row.length; j++) {
-            var innerValue = row[j] === null ? '' : row[j].toString();
-            if (row[j] instanceof Date) {
-                innerValue = row[j].toLocaleString();
-            };
-            var result = innerValue.replace(/"/g, '""');
-            if (result.search(/("|,|\n)/g) >= 0)
-                result = '"' + result + '"';
-            if (j > 0)
-                finalVal += ',';
-            finalVal += result;
-        }
-        return finalVal + '\n';
-    };
-
-    var csvFile = '';
-    for (var i = 0; i < rows.length; i++) {
-        csvFile += processRow(rows[i]);
+var inputEmit = function(){
+    var output = "";
+    for (i=0; i<toggle_sliders.length; i++){
+        output += String(toggle_sliders[i].value());
+        if (i!=toggle_sliders.length-1) output+=",";
     }
-
-    var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-    if (navigator.msSaveBlob) { // IE 10+
-        navigator.msSaveBlob(blob, filename);
-    } else {
-        var link = document.createElement("a");
-        if (link.download !== undefined) { // feature detection
-            // Browsers that support HTML5 download attribute
-            var url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }
+    console.log(output);
+    //ws.send(output);
 }
 
 

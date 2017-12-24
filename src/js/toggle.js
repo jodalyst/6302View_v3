@@ -51,25 +51,23 @@ function Toggle(div_id,title,unique,names=["OFF","ON"],socket=null){
         else slider_input.checked = false;
     }
     this.value = function(){
-        return slider_input.checked;
+        return slider_input.checked?1:0;
     }
 
     setup();
     var checko = function(element){
         if (slider_input.checked){
-            console.log("on");
         }else{
-            console.log("off");
         }
         value_div.innerHTML = names[slider_input.checked?1:0];
         if (socket != null){
-            console.log('reporting', {'unique':unique, 'data':slider_input.checked});
             socket.emit('reporting', {'unique':unique, 'data':slider_input.checked});
         }
+        document.dispatchEvent(ui_change);        
     }     
     slider_input.addEventListener('change', checko, false);
 
     if (socket != null){
-        socket.on("update_"+unique,function(va){console.log("hit");if (built){console.log(va); console.log(va==true);slider_input.checked=va;}});
+        socket.on("update_"+unique,function(va){if (built){console.log(va); console.log(va==true);slider_input.checked=va;}});
     };
 };

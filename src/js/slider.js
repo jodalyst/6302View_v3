@@ -157,18 +157,18 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             holder.appendChild(toggle_box);
             //holder.appendChild(period_container);
             slider_element.noUiSlider.on('update',function(value) {
-                console.log(value);
                 spec_input.value = value[1];
                 bott_lim = parseFloat(value[0]);
                 low_input.value = value[0];
                 top_lim = parseFloat(value[2]);
                 high_input.value = value[2];
+                document.dispatchEvent(ui_change);        
+
             });
             toggle_in.addEventListener("change",function(){
                 if (toggle_in.checked){
                     toggling = true;
                     var period_value = parseFloat(period_input.value);
-                    console.log(period_value);
                     if (period_value===0 || period_value == null){
                         period_input.value = 1;
                         toggle_in.checked = false;
@@ -217,8 +217,9 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
                 }
             });
             slider_element.noUiSlider.on('update',function(value) {
-                console.log(value);
                 spec_input.value = value;
+                document.dispatchEvent(ui_change);        
+                console.log("change slider");
             });
         }
 
@@ -241,6 +242,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     spec_input.addEventListener('click', function(){
         if (toggle) slider_element.noUiSlider.set([null,this.value,null]);
         else  slider_element.noUiSlider.set([this.value]);
+
     });
 };
 
