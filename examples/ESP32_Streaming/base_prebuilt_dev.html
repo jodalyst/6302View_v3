@@ -1,0 +1,225 @@
+<!doctype html>
+<html>
+<head>
+
+  <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="/src/js/packery.pkgd.min.js"></script>
+  <script src="/src/js/draggabilly.pkgd.min.js"></script>
+  <script src="/src/js/socket.io.js"></script>
+  <script src="/src/js/nouislider.min.js" ></script>
+  <script src="/src/js/jinstr.js" ></script>
+  <script src="/src/js/time_series.js" ></script>
+  <script src="/src/js/pushbutton.js" ></script>
+  <script src="/src/js/toggle.js" ></script>
+  <script src="/src/js/slider.js" ></script>
+  <script src="/src/js/wNumb.js" ></script>
+  <script src="/src/js/numerical_reporter.js" ></script>
+  <link rel="stylesheet" type="text/css" href="/src/css/checkboxes.min.css">
+  <link rel="stylesheet" type="text/css" href="/src/css/nouislider.min.css">
+  <link rel="stylesheet" type="text/css" href="/src/css/gui.css">
+</head>
+
+<body>
+<h1>6302View</h1>
+<p><i>Enter the IP address printed from your microcontroller's Serial readout here, press Submit/Connect, and start working.</i></p>
+<p>Local IP: <input type="text" name="ipaddress" id="ipaddress"/><button id="ipsubmit" style="vertical-align:middle"><span>Submit/Connect</span></button></p>
+<div style="height:100px;">
+<div style="float:left;width:200px;">
+<h3 id="grid_status">Grid Locked</h3>
+<div class="ckbx-style-8">
+    <input type="checkbox" id="grid_lock" name="hey">
+    <label for="grid_lock"></label>
+</div>
+</div>
+<div style="float:left;width:200px;">
+<h3 id="grid_status">CSV Generate?</h3>
+<div class="ckbx-style-8">
+    <input type="checkbox" id="csv_enable" value="1" name="csv_enable">
+    <label for="csv_enable"></label>
+</div>
+</div>
+</div>
+
+<div class="cp">
+  <div class="cp-item" id="plotbox"></div>
+  <div class="cp-item" id="plotbox2"></div>
+  <div class="cp-item" id="sliderbox1"></div>
+  <div class="cp-item" id="sliderbox2"></div>
+  <div class="cp-item" id="togglebox1"></div>
+  <div class="cp-item" id="togglebox2"></div>
+  <!--<div class="cp-item" id="toggle1"></div>-->
+</div>
+
+
+<script>
+//Use these when laying out colors!
+var standard_colors = ["blue","red","green","yellow","purple"];
+var mouseX=0;
+var mouseY = 0;
+document.addEventListener("mousemove",function(e){
+        mouseX = e.pageX;
+        mouseY = e.pageY;
+});
+
+//constants used for plot sizing:
+var PLOT_HEIGHT = 200;
+var PLOT_WIDTH = 300;
+
+
+//constants used for WS state machine:
+var IDLE = 0;
+var BUILDING = 1; 
+var UPDATE =2;
+var RUNNING = 3;
+//system state variable for WS state machine
+var system_state = IDLE;
+
+//data for building up csv logs:
+var data_for_csv=[];
+var recording_csv = false;
+var csv_header = [];
+//
+var toggle_sliders = []; //array of hooks for toggle and slider objects
+var data_depth = []; //1 for 1-plots, n for n-plots
+var div_elements = [];
+var plots = []; //array of hooks for plot objects
+
+var old_input = [];
+
+var ws;
+
+window.onload = function(){
+    var unique = 456;
+    plot = new Time_Series("plotbox",'Accelerations',PLOT_WIDTH, PLOT_HEIGHT,60,[-100,100],3,["green","yellow","blue"],unique);
+    plot2 = new Time_Series("plotbox2",'Mouse Moves',PLOT_WIDTH, PLOT_HEIGHT,60,[0,1000],2,["red","blue"],unique+1);
+    toggle_sliders.push(new Slider("sliderbox1","Things",0,10,0.1,true,unique+2));
+    toggle_sliders.push(new Slider("sliderbox2","Kp",0,10,0.1,false,unique+3));
+    toggle_sliders.push(new Toggle("togglebox1","Cat",unique+4));
+    toggle_sliders.push(new Toggle("togglebox2","Large Fire Trigger", unique+5));
+    timer = setInterval(function(){
+        plot2.step([[mouseX],[mouseY]]);
+    }, 10);
+    document.addEventListener("ui_change", inputEmit);
+}
+
+
+document.getElementById("ipsubmit").addEventListener("mousedown",function(){
+    var ip = document.getElementById("ipaddress").value; //collect the ip address
+    //Should add in some checker/an alert that comes up if you can't actually connect.
+    ws = new WebSocket("ws://"+ip); //create new websocket to the ip of interest
+    ws.onopen = function(){
+      // Web Socket is connected, send data using send()
+      console.log("web socket established");
+    }; 
+    ws.onmessage = MessageParser(evt);
+ 
+    ws.onclose = function(){ 
+      // websocket is closed.
+      console.log("Connection is closed..."); 
+    };
+});
+
+
+var MessageParser = function(evt){
+    var received_msg = evt.data;
+    console.log(received_msg);
+    switch (system_state){
+        case IDLE:
+            if (received_msg==="BUILDING"){
+                system_state = BUILDING;
+                toggle_sliders = [];
+                plots = [];
+                WipeGUI();
+                unique_counter = 0;
+                csv_header = ["Time"];
+            }
+        case BUILDING:
+            if (received_msg==="END"){
+                system_state = UPDATE;
+            }else{
+                var newdiv = document.createElement("div"); //new div to house new widget
+                newdiv.setAttribute("id","box_"+String(unique_counter)); //give it unique identifier
+                div_list.push(newdiv); //push to div list (for overall DOM management
+                var build_array = received_msg.split("&"); //chop up the build string
+                switch (build_array[0]){ //check the first part of build array for type of widget to build
+                    case "S": //slider
+                        console.log("adding slider");
+                        var title = build_array[1];
+                        var low = parseFloat(build_array[2]);
+                        var high = parseFloat(build_array[3]);
+                        var res = parseFloat(build_array[4]);
+                        var toggle = build_array[5]==="1"?true:false;
+                        toggle_sliders.push(new Slider("box_"+String(unique_counter),title,low,high,res,toggle,unique_counter));
+                        csv_header.push(title);
+                    case "T": //toggle
+                        console.log("adding toggle");
+                        var title = build_array[1];
+                        csv_header.push(title);
+                        toggle_sliders.push(new Toggle("box_"+String(unique_counter),title,unique_counter));
+                    case "P": //plot:
+                        console.log("adding plot");
+                        var title = build_array[1];
+                        var trace_count = parseFloat(build_array[2]);
+                        data_depth.push(trace_count);
+                        var v_low = parseFloat(build_array[3]);
+                        var v_high = parseFloat(build_array[4]);
+                        var h_count = parseInt(build_array[5]);
+                        if (trace_count ===1){
+                            plots.push(new Time_Series("box_"+String(unique_counter),title,PLOT_WIDTH,PLOT_HEIGHT,h_count,[v_low,v_high],1,["blue"],unique_counter));
+                            csv_header.push(title);
+                        }else{
+                            var colors = standard_colors.slice(0,trace_count+1);
+                            plots.push(new Time_Series("box_"+String(unique_counter),title,PLOT_WIDTH,PLOT_HEIGHT,h_count,[v_low,v_high],trace_count,colors,unique_counter));
+                            for (i = 0; i<trace_count;i++) csv_header.push(title+"_"+String(i));
+                        }
+                }
+                unique_counter+=1;
+            }
+        case UPDATE:
+            var data_array = received_msg.split("&"); //chop up the data string;
+            if (data_array[0]==="I"){
+                var update_data = eval(data_array[1]);
+                for (i=0; i<toggle_sliders.length;i++){
+                    toggle_sliders[i].update(update_data[i]);
+                }
+            }else if(data_array[0]==="O"){
+                var actual = eval(data_array[1]);
+                for (i=0;i<plots.length;i++){
+                    plots[i].step(actual[i]);
+                }
+            }
+
+        case RUNNING:
+
+    }
+};
+
+var WipeGUI = function(){
+    var len = div_list.length;
+    for (var i = 0; i<len; i++){
+        var to_junk = div_list.pop();
+        to_junk.remove();
+    }
+};
+
+var inputEmit = function(){
+    var input = "";
+    for (i=0; i<toggle_sliders.length; i++){
+        input += String(toggle_sliders[i].value());
+        if (i!=toggle_sliders.length-1) input+=",";
+    }
+    if (!array_equals(input,old_input) && ready_to_fire){
+    console.log(input);
+    old_input = input.slice(); //copy of array for next time.
+    ready_to_fire = false;
+    //ws.send(input);
+    }
+}
+
+
+</script>
+
+<script src="/src/js/draggable.js"></script>
+
+</body>
+</html>

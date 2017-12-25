@@ -48,8 +48,10 @@ Data should immediately start streaming (this was designed using a three axis an
 
 
 * Persistent values on user inputs between loads (Done)
-* CSV implementation
+* CSV implementation (Done)...still some weird bugs
 * Draggablility Fix
 * Remove needless console.log (Done)
 
+* Toggle persistence needs to be fixed
+* CSV initial bug needs to be fixed.
 

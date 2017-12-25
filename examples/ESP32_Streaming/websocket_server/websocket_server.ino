@@ -1,4 +1,4 @@
-#include "Six302.h"
+#include <Six302.h>
 #include <math.h>
 
 
@@ -37,7 +37,7 @@ void loop(){
 
   //User code here!  take in readings, update values, etc...should be all good.
 
-  angle = cos(millis()*0.01);
+  angle = cos(millis()*0.001*6.28);
   omega = Kd;
   dwdt = ct_or_dt?cos(millis()*0.1):1;
   vms[0] = Kd*cos(millis()*0.01);
