@@ -116,7 +116,7 @@ var MessageParser = function(evt){
         case BUILDING:
             if (received_msg==="END"){
                 system_state = UPDATE;
-                document.dispatchEvent(ui_change);
+                document.dispatchEvent(field_built);
             }else{
                 var newdiv = document.createElement("div"); //new div to house new widget
                 newdiv.setAttribute("id","box_"+String(unique_counter)); //give it unique identifier
@@ -286,3 +286,52 @@ var array_equals = function (array1,array2) {
 }
 
 
+// external js: packery.pkgd.js, draggabilly.pkgd.js
+
+var pckry;
+var draggies = [];
+var isDrag = false;
+
+//window.addEventListener("load", function(){
+document.addEventListener("field_built",function(){
+  //document.addEventListener("load", function(){
+    console.log("we did it!");  
+  // external js: packery.pkgd.js, draggabilly.pkgd.js
+  pckry = new Packery( '.cp', {
+    itemSelector: '.cp-item',
+    columnWidth: 1
+  });
+  // collection of Draggabillies
+  pckry.getItemElements().forEach( function( itemElem ) {
+    var draggie = new Draggabilly( itemElem ,{handle:'.handle'});
+    draggies.push(draggie);
+    pckry.bindDraggabillyEvents( draggie );
+    draggie['disable']();
+  });
+
+});
+
+document.getElementById("grid_lock").addEventListener("change",function() {
+    // check if checkbox is checked
+    console.log(pckry);
+    console.log(draggies);
+    console.log(document.getElementById("grid_lock").checked);
+    var method = isDrag ? 'disable' : 'enable';
+    draggies.forEach( function( draggie ) {
+        draggie[ method ]();
+    });
+    // switch flag
+    isDrag = !isDrag;
+    if (isDrag){
+        document.getElementById("grid_status").innerHTML = "Grid UnLocked";
+    }else{
+        document.getElementById("grid_status").innerHTML = "Grid Locked";
+    }
+    /*if (document.querySelector('#my-checkbox').checked) {
+      // if checked
+      console.log('checked');
+    } else {
+      // if unchecked
+      console.log('unchecked');
+    }*/
+  });
