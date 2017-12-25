@@ -47,9 +47,9 @@ Data should immediately start streaming (this was designed using a three axis an
 ## Things to Do:
 
 
-* Persistent values on user inputs between loads
+* Persistent values on user inputs between loads (Done)
 * CSV implementation
 * Draggablility Fix
-* Remove needless console.log
+* Remove needless console.log (Done)
 
 

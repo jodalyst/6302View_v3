@@ -95,7 +95,8 @@ int CommManager::overhead(){
 bool CommManager::step(){
   if (client_connected && handshake && client.available()) { // if there's bytes to read from the client (but only if it ,
     String data = webSocketServer.getData();
-    if (connection_status ==RUNNING){
+    if (connection_status ==RUNNING &&data.substring(0,1)=="U"){
+      Serial.println(data);
       int current_index=0;
       for (int count=0; count<incoming_count;count++){
         int new_index = data.indexOf(",",current_index+1);
@@ -105,10 +106,12 @@ bool CommManager::step(){
         *incoming_data[count] = raw.toFloat(); //convert to float and assign to appropriate user variable
         current_index = new_index; 
       }
+    }else{
+      if(VERBOSE)Serial.println("Ignoring set");
     }
   }
   if(report_count >= report_num_iter){ //time to check connection and/or report data
-    if(VERBOSE)Serial.println(overhead());
+    //if(VERBOSE)Serial.println(overhead());
     report_count =0; //reset
     //if (VERBOSE) Serial.print("Connection status:" ); Serial.println(connection_status);
     switch (connection_status){
@@ -138,7 +141,6 @@ bool CommManager::step(){
         }
         break;
       case BUILDING:
-        if (VERBOSE) Serial.print(build_iterator);Serial.print(" "); Serial.println(incoming_count+outgoing_count);
         if (build_iterator==-1){
           webSocketServer.sendData("BUILDING");
         }else if (build_iterator == incoming_count+outgoing_count){
@@ -161,6 +163,7 @@ bool CommManager::step(){
           }
           sprintf(data_to_send+strlen(data_to_send),"]");
           webSocketServer.sendData(data_to_send);
+          if(VERBOSE)Serial.println(data_to_send);
           connection_status = RUNNING;
         }
         break;

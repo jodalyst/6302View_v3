@@ -32,11 +32,14 @@
 </div>
 </div>
 <div style="float:left;width:200px;">
-<h3 id="grid_status">CSV Generate?</h3>
-<div class="ckbx-style-8">
-    <input type="checkbox" id="csv_enable" value="1" name="csv_enable">
-    <label for="csv_enable"></label>
+    <h3 id="grid_status">CSV Generate?</h3>
+    <div class="ckbx-style-8">
+        <input type="checkbox" id="csv_enable" value="1" name="csv_enable">
+        <label for="csv_enable"></label>
+    </div>
 </div>
+<div style="float:left;width:200px;">
+    <p>CSV Name: <input type="text" name="csv_name" id="csv_name"/></p>
 </div>
 </div>
 
@@ -70,7 +73,11 @@ var system_state = IDLE;
 //data for building up csv logs:
 var data_for_csv=[];
 var recording_csv = false;
-var csv_header = [];
+var csv_header_inputs = []; //headers of inputs in order
+var csv_header_outputs = []; //headers of outputs in order
+
+var csv_dom; 
+
 //
 var toggle_sliders = []; //array of hooks for toggle and slider objects
 var data_depth = []; //1 for 1-plots, n for n-plots
@@ -79,6 +86,8 @@ var unique_counter = 0;
 var plots = []; //array of hooks for plot objects
 
 var old_input = [];
+
+var current_inputs = [];
 
 var ws;
 
@@ -96,8 +105,20 @@ window.onload = function(){
         plot2.step([[mouseX],[mouseY]]);
     }, 10);
     */
+
     document.addEventListener("ui_change", inputEmit);
 }
+
+document.getElementById("csv_enable").addEventListener("change",function() {
+    if (document.getElementById("csv_enable").checked){
+        recording_csv = true;
+    }else{ //when you shut it off
+        recording_csv = false;
+        var nameo = document.getElementById("csv_name").value+"_"+String(Date.now()); //bingo was his nameo
+        var header = csv_header_inputs+csv_header_outputs;
+        exportCSV(nameo, header+data_for_csv);
+    }
+});
 
 
 document.getElementById("ipsubmit").addEventListener("mousedown",function(){
@@ -130,7 +151,8 @@ var MessageParser = function(evt){
                 plots = [];
                 WipeGUI();
                 unique_counter = 0;
-                csv_header = ["Time"];
+                csv_header_inputs = [];
+                csv_header_outputs = []; 
             }
             break;
         case BUILDING:
@@ -154,12 +176,12 @@ var MessageParser = function(evt){
                         var res = parseFloat(build_array[4]);
                         var toggle = build_array[5]==="1"?true:false;
                         toggle_sliders.push(new Slider("box_"+String(unique_counter),title,low,high,res,toggle,unique_counter));
-                        csv_header.push(title);
+                        csv_header_inputs.push(title);
                         break;
                     case "T": //toggle
                         console.log("adding toggle");
                         var title = build_array[1];
-                        csv_header.push(title);
+                        csv_header_inputs.push(title);
                         toggle_sliders.push(new Toggle("box_"+String(unique_counter),title,unique_counter));
                         break;
                     case "P": //plot:
@@ -172,11 +194,11 @@ var MessageParser = function(evt){
                         var h_count = parseInt(build_array[5]);
                         if (trace_count ===1){
                             plots.push(new Time_Series("box_"+String(unique_counter),title,PLOT_WIDTH,PLOT_HEIGHT,h_count,[v_low,v_high],1,["blue"],unique_counter));
-                            csv_header.push(title);
+                            csv_header_outputs.push(title);
                         }else{
                             var colors = standard_colors.slice(0,trace_count+1);
                             plots.push(new Time_Series("box_"+String(unique_counter),title,PLOT_WIDTH,PLOT_HEIGHT,h_count,[v_low,v_high],trace_count,colors,unique_counter));
-                            for (i = 0; i<trace_count;i++) csv_header.push(title+"_"+String(i));
+                            for (i = 0; i<trace_count;i++) csv_header_outputs.push(title+"_"+String(i));
                         }
                         break;
                 }
@@ -186,9 +208,18 @@ var MessageParser = function(evt){
         case UPDATE:
             var data_array = received_msg.split("&"); //chop up the data string;
             if (data_array[0]==="I"){
+                console.log(data_array);
                 var update_data = eval(data_array[1]);
-                for (i=0; i<toggle_sliders.length;i++){
+                console.log(update_data);
+                console.log(toggle_sliders.length);
+                current_inputs = [];
+                console.log(i);
+                for (var i=0; i<toggle_sliders.length;i++){
                     toggle_sliders[i].update(update_data[i]);
+                    current_inputs.push(toggle_sliders[i]);
+                    console.log(update_data);
+                    console.log(i);
+                    console.log(update_data[i]);
                 }
             }else if(data_array[0]==="O"){
                 var actual = eval(data_array[1]);
@@ -201,6 +232,7 @@ var MessageParser = function(evt){
                     }
                     plots[i].step(to_push);
                 }
+                data_for_csv.push(current_inputs+actual);
             }
             break;
     }
@@ -215,9 +247,11 @@ var WipeGUI = function(){
 };
 
 var inputEmit = function(){
-    var input = "";
+    var input = "U";
+    current_inputs = [];
     for (i=0; i<toggle_sliders.length; i++){
         input += String(toggle_sliders[i].value());
+        current_inputs.push(toggle_sliders[i]);
         if (i!=toggle_sliders.length-1) input+=",";
     }
     if (!array_equals(input,old_input) && ready_to_fire){
