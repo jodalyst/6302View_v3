@@ -5,6 +5,9 @@ var field_built = new CustomEvent('field_built');
 var ready_to_fire = true;
 
 
+var isActive = true;
+
+
 //Use these when laying out colors!
 var standard_colors = ["blue","red","green","yellow","purple"];
 var mouseX=0;
@@ -49,6 +52,20 @@ var current_inputs = [];
 var ws;
 
 var gui_land = document.getElementById("gui_land"); //where draggables end up!
+
+
+
+window.onfocus = function () { 
+  console.log("IN FOCUS");
+  isActive = true; 
+  document.body.style.background = "#fcfff4";
+}; 
+
+window.onblur = function () { 
+  console.log("OUT OF FOCUS");
+  isActive = false; 
+  document.body.style.background = "red";
+};
 
 window.onload = function(){
     /*
@@ -181,7 +198,9 @@ var MessageParser = function(evt){
                         to_push.push([actual[count]]);
                         count+=1;
                     }
-                    plots[i].step(to_push);
+                    if(isActive){
+                        plots[i].step(to_push);
+                    }
                 }
                 if(recording_csv){
                     var fcsv = current_inputs.concat(actual);

@@ -55,6 +55,9 @@ void setup()
 void loop(){
 
   //User code here!  take in readings, update values, etc...should be all good.
+  //below is just some random math/linking/relationships of inputs to outputs for demos
+  //normally you'd do your analog readings, and legit stuff here.
+  //
   angle = cos(millis()*0.001*6.28);
   omega = Kd;
   dwdt = ct_or_dt?cos(millis()*0.1):1;

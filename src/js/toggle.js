@@ -49,6 +49,7 @@ function Toggle(div_id,title,unique,names=["OFF","ON"],socket=null){
     this.update = function(value){
         if(value) slider_input.checked = true;
         else slider_input.checked = false;
+        value_div.innerHTML = names[slider_input.checked?1:0];
     }
     this.value = function(){
         return slider_input.checked?1:0;
