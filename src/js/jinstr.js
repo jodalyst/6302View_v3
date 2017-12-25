@@ -187,7 +187,7 @@ var MessageParser = function(evt){
                 current_inputs = [];
                 for (var i=0; i<toggle_sliders.length;i++){
                     toggle_sliders[i].update(update_data[i]);
-                    current_inputs.push(toggle_sliders[i]);
+                    current_inputs.push(toggle_sliders[i].value());
                 }
             }else if(data_array[0]==="O"){
                 var actual = eval(data_array[1]);
