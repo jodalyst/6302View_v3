@@ -115,8 +115,12 @@ document.getElementById("csv_enable").addEventListener("change",function() {
     }else{ //when you shut it off
         recording_csv = false;
         var nameo = document.getElementById("csv_name").value+"_"+String(Date.now()); //bingo was his nameo
-        var header = csv_header_inputs+csv_header_outputs;
-        exportCSV(nameo, header+data_for_csv);
+        console.log(csv_header_inputs);
+        console.log(csv_header_outputs);
+        var header = [csv_header_inputs.concat(csv_header_outputs)];
+        console.log(header);
+        var to_out = header.concat(data_for_csv);
+        exportCSV(nameo, to_out);
     }
 });
 
@@ -208,18 +212,11 @@ var MessageParser = function(evt){
         case UPDATE:
             var data_array = received_msg.split("&"); //chop up the data string;
             if (data_array[0]==="I"){
-                console.log(data_array);
                 var update_data = eval(data_array[1]);
-                console.log(update_data);
-                console.log(toggle_sliders.length);
                 current_inputs = [];
-                console.log(i);
                 for (var i=0; i<toggle_sliders.length;i++){
                     toggle_sliders[i].update(update_data[i]);
                     current_inputs.push(toggle_sliders[i]);
-                    console.log(update_data);
-                    console.log(i);
-                    console.log(update_data[i]);
                 }
             }else if(data_array[0]==="O"){
                 var actual = eval(data_array[1]);
@@ -232,7 +229,13 @@ var MessageParser = function(evt){
                     }
                     plots[i].step(to_push);
                 }
-                data_for_csv.push(current_inputs+actual);
+                if(recording_csv){
+                    console.log(current_inputs);
+                    console.log(actual);
+                    var fcsv = current_inputs.concat(actual);
+                    data_for_csv.push(fcsv);
+                    console.log(fcsv);
+                }
             }
             break;
     }
@@ -251,11 +254,10 @@ var inputEmit = function(){
     current_inputs = [];
     for (i=0; i<toggle_sliders.length; i++){
         input += String(toggle_sliders[i].value());
-        current_inputs.push(toggle_sliders[i]);
+        current_inputs.push(toggle_sliders[i].value());
         if (i!=toggle_sliders.length-1) input+=",";
     }
     if (!array_equals(input,old_input) && ready_to_fire){
-    console.log(input);
     old_input = input.slice(); //copy of array for next time.
     ready_to_fire = false;
     ws.send(input);
