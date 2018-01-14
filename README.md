@@ -1,9 +1,19 @@
 
-# Overview of new System
+# Status of Current Build
+
+This repo houses a current standalone build of the whole microcontroller-to-javascript infrastructure. 
+
+
+## Software-Side Overview
+
+Currently, the browser/client-side interface 
+
+
+## MCU-Side Overview
 
 This new interface utilizes direct websocket connection between the ESP32 and a hosted website.  It should require minimal installation on the part of the student (no Python, Flask, or threading cludges.)
 
-The only thing it requires are two libraries to be installed in your Arduino IDE.  To do this move a copy of the `Six302` library and a copy of the `ESP32-Websocket` library to your library folder for you Arduino (on Mac this is usually located under `Documents>Arduino>libraries`).
+The only thing it requires are two libraries to be installed in your Arduino IDE (assuming your Arduino IDE has the ESP32 Arduino Core installed. Instructions are found here: <a href="https://github.com/espressif/arduino-esp32" target="_blank">here</a>). Installing these two additional libraries involves moving a copy of the `Six302` library and a copy of the `ESP32-Websocket` library to your library folder for you Arduino (on Mac this is usually located under `Documents>Arduino>libraries`).
 
 Once installed, you only need to include the `Six302` library and then go to a site that hosts the GUI backend (note you can either do this locally with a Python Flask server if you'd like) or a remotely-hosted site.
 
@@ -141,7 +151,7 @@ cm.addPlot("Voltages",0,3,100, vms,2);
 
 Note that in this case, the pointer argument provided refers to an `float` array, and the final argument (unused in a single-trace plot) refers to how many traces are involved.  Each trace will be given a different color in the plot, in the order of blue, red, green, yellow, and purple.
 
-#Running Everything
+# Running Everything
 
 When you've got a handle on everything the basic order of operations is as follows:
 
@@ -149,11 +159,11 @@ When you've got a handle on everything the basic order of operations is as follo
 * Head on over to your GUI, enter that IP address into the appropriate field, and then press connect. Within a second or two, the gui elements will have built and all will be right with the world.  Plots should immediately start running.
 
 
-##CSV
+## CSV
 
 The ability to record all data is facilitated through the `CSV Generate?` button at the top of the page.  Upon pressing this, at every update step (every time the graphs on the page update), all current values of inputs (sliders and toggle switches) as well as the newest set of outputs (the plot values) will be appended to a CSV row.  A header for identification purposes is automatically generated in the order INPUTS and then OUTPUTS based on their declaration order in the ESP32 code.  When you unclick the CSV button, the csv file will be generated using the name specified in the CSV name field and a timestamp.  
 
-##Rearranging
+## Rearranging
 
 While taking data if you get sick of the order of the widgets you can click on the `Grid Locked` toggle at the top left to enable dragging of gui elements.  To drag them, click and hold on the title of the element. As you move it, it will turn a light green and a dashed outline will show where you're moving it.  Other things will rearrange in a crappy way around where you're putting it.  Does this help much?  The more panels, the more it sort of does, but don't feel obligated to use it.
 
