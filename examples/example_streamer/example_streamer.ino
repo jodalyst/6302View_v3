@@ -1,3 +1,5 @@
+
+#include <WiFi.h>
 #include <Six302.h>
 #include <math.h>
 
@@ -22,7 +24,7 @@ void setup()
     delay(500); //initial wait for safety
     Serial.begin(115200);//set up serial
     cm.connect("J2","18611865");
-    cm.addSlider("Kp",-5,5,0.1,false, &Kp); //add a slider called Kp and link it to variable Kp
+    cm.addSlider("asldfjalsfj",-5,5,0.1,false, &Kp); //add a slider called Kp and link it to variable Kp
     cm.addSlider("Kd",-5,5,0.1,false, &Kd); //add a slider called Kd and link it to variable Kd
     cm.addSlider("Desired",-5,5,0.1,true, &desired); // similar...
     cm.addToggle("CT or DT", &ct_or_dt); 

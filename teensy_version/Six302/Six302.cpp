@@ -12,8 +12,12 @@ CommManager::CommManager(int sp, int rp) {
   client_connected = false;
   connection_status = IDLE;
   overhead_meas = 0;
+  in_message_index=0;
 }
 
+bool CommManager::initialize(){
+  Serial.begin(115200);
+}
 
 
 bool CommManager::addSlider(char* name,float low,float high,float step_size,bool toggle, float* linker){
@@ -72,10 +76,9 @@ int CommManager::overhead(){
 }
  
 bool CommManager::step(){
-  if (client_connected && handshake && client.available()) { // if there's bytes to read from the client (but only if it ,
-    String data = webSocketServer.getData();
-    if (connection_status ==RUNNING &&data.substring(0,1)=="U"){
-      Serial.println(data);
+  if (client_connected && handshake && in_message_index>0) { // if there's bytes to read from the client (but only if it ,
+    String data = in_message[in_message_index];
+    if (connection_status ==RUNNING && data.substring(0,1)=="U"){
       int current_index=0;
       for (int count=0; count<incoming_count;count++){
         int new_index = data.indexOf(",",current_index+1);
@@ -121,12 +124,12 @@ bool CommManager::step(){
         break;
       case BUILDING:
         if (build_iterator==-1){
-          webSocketServer.sendData("BUILDING");
+          Serial.write("BUILDING");
         }else if (build_iterator == incoming_count+outgoing_count){
           // Will remove CSV choice for now...just hardcode it
           //if (csv) webSocketServer.sendData("END~CSV"); //end build but tack on csv option
 //        //else 
-          webSocketServer.sendData("END"); //end build with no csv option
+          Serial.write("END"); //end build with no csv option
           connection_status = UPDATING; //we're done and into running mode.
         }else{
           webSocketServer.sendData(build_strings[build_iterator]); //send each build string separately
@@ -141,7 +144,7 @@ bool CommManager::step(){
             sprintf(data_to_send+strlen(data_to_send),"%.2f%s",*(incoming_data[i]),i<incoming_count-1?",":"");
           }
           sprintf(data_to_send+strlen(data_to_send),"]");
-          webSocketServer.sendData(data_to_send);
+          Serial.write(data_to_send);
           if(VERBOSE)Serial.println(data_to_send);
           connection_status = RUNNING;
         }
@@ -158,7 +161,7 @@ bool CommManager::step(){
           }
           sprintf(data_to_send+strlen(data_to_send),"]");
           if (VERBOSE) Serial.print("PRE SEND");
-          webSocketServer.sendData(data_to_send);
+          Serial.write(data_to_send);
           //if (VERBOSE) Serial.println("POST SEND");
         }else{ //lost our connection
           client_connected = false; //done
@@ -175,5 +178,18 @@ bool CommManager::step(){
   Serial.println(overhead_meas);
   while (micros()-timeo<step_period);
   timeo = micros(); //update time
+}
+
+
+void serialEvent() {
+  in_message[in_message_index] = "";
+  while (Serial.available()) {
+    char inChar = (char)Serial.read();
+    in_message[in_message_index] += inChar;
+    if (inChar == '\n') {
+      in_message_index++;
+      return;
+    }
+  }
 }
 

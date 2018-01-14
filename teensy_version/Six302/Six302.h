@@ -46,6 +46,8 @@ class CommManager
     char data_to_send[200];
     int connection_status;
     int build_iterator;
+    String in_messages[5];
+    int in_message_index;
     
 };
 
