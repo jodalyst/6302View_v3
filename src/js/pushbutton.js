@@ -25,8 +25,9 @@ function PushButton(div_id,unique,title,label,color=null,bg_color=null,socket=nu
         button_element.setAttribute("class","gui_button");
         button_element.setAttribute("id",div_id+unique+"button");
         button_element.innerHTML = label;
+        setupDragableWindow(holder);
         holder.appendChild(button_element);
-           
+
         if (bg_color===null || color===null){
             console.log("no color");
         }else{

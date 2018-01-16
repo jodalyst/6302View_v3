@@ -28,11 +28,11 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     var spec_input;
     var total_element;
     var toggle_timer;
-    var bott_lim; 
+    var bott_lim;
     var top_lim;
     var low_label; //will contain text of "Lower Limit:"
     var low_input; //will contain value of lower limit
-    var high_label; //will contain 
+    var high_label; //will contain
     var high_input;
     var low_holder;
     var high_holder;
@@ -49,6 +49,8 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
         holder = document.createElement("div");
         holder.setAttribute("id", div_id+unique+"_holder");
         holder.setAttribute("class", "slider_holder");
+
+        setupDragableWindow(holder);
         //holder.appendChild(handle);
         overall_div.appendChild(holder);
         var label_element = document.createElement("div");
@@ -57,7 +59,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
         holder.appendChild(label_element);
         slider_element = document.createElement("div");
         slider_element.setAttribute("id", div_id+unique+"slider");
-        holder.appendChild(slider_element); 
+        holder.appendChild(slider_element);
         val_holder = document.createElement("div");
         val_holder.setAttribute("class","slider_values_holder");
         spec_holder = document.createElement("div");
@@ -76,7 +78,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
         //var inlabel = document.createElement("span");
         //inlabel.innerHTML= "Value:";
         //holder.appendChild(inlabel);
-        holder.appendChild(val_holder); 
+        holder.appendChild(val_holder);
         if (toggle){
             noUiSlider.create(slider_element, {
                 start: [min,min,max],
@@ -89,7 +91,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             });
 
             low_holder = document.createElement("div");
-            low_label = document.createElement("div"); 
+            low_label = document.createElement("div");
             low_holder.setAttribute("class","slider_input_holder");
             low_label.innerHTML="Low Limit:";
             low_input = document.createElement("input");
@@ -100,10 +102,10 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             low_input.setAttribute("id",div_id+unique+"low_input");
             low_input.setAttribute("class","numerical_input");
             low_holder.appendChild(low_label);
-            low_holder.appendChild(low_input); 
+            low_holder.appendChild(low_input);
 
             high_holder = document.createElement("div");
-            high_label = document.createElement("div"); 
+            high_label = document.createElement("div");
             high_label.innerHTML="High Limit:";
             high_input = document.createElement("input");
             high_input.setAttribute("type","number");
@@ -154,7 +156,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             toggle_holder.appendChild(toggle_label);
             toggle_holder.appendChild(toggle_element);
             toggle_box.appendChild(toggle_holder);
-            toggle_box.appendChild(period_container); 
+            toggle_box.appendChild(period_container);
             holder.appendChild(toggle_box);
             //holder.appendChild(period_container);
             slider_element.noUiSlider.on('update',function(value) {
@@ -163,7 +165,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
                 low_input.value = value[0];
                 top_lim = parseFloat(value[2]);
                 high_input.value = value[2];
-                document.dispatchEvent(ui_change);        
+                document.dispatchEvent(ui_change);
 
             });
             toggle_in.addEventListener("change",function(){
@@ -180,7 +182,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
                                 slider_element.noUiSlider.set([null,bott_lim,null]);
                             }else{
                                 slider_element.noUiSlider.set([null,top_lim,null]);
-                            } 
+                            }
                     },1000*period_value);
                     }
                 }else{
@@ -219,7 +221,7 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
             });
             slider_element.noUiSlider.on('update',function(value) {
                 spec_input.value = value;
-                document.dispatchEvent(ui_change);        
+                document.dispatchEvent(ui_change);
             });
         }
 
@@ -228,11 +230,11 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
 
     if (toggle){
         this.update = function(value){
-            slider_element.noUiSlider.set([null,parseFloat(value),null]); //update value except for limits 
+            slider_element.noUiSlider.set([null,parseFloat(value),null]); //update value except for limits
         };
     }else{
         this.update = function(value){
-            slider_element.noUiSlider.set([parseFloat(value)]); //update value except for limits 
+            slider_element.noUiSlider.set([parseFloat(value)]); //update value except for limits
         };
     }
 
@@ -245,8 +247,3 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
 
     });
 };
-
-
-
-
-

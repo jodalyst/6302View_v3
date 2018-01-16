@@ -277,6 +277,14 @@ svg {
     vertical-align: middle;
     width: 150px;
 }
+.stick_holder {
+  width:140px;
+  height:140px;
+  vertical-align: middle;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
 
 
 .toggle{
@@ -347,7 +355,7 @@ svg {
 
 
 
-* { box-sizing: border-box; } 
+* { box-sizing: border-box; }
 
 .cp {
   /*background: #DDD;*/
@@ -404,7 +412,6 @@ svg {
 
 .cp-item:hover {
   border-color: hsla(0, 0%, 50%, 0.5);
-  cursor: move;
 }
 
 .cp-item.is-dragging,
@@ -431,6 +438,17 @@ svg {
   top: 0;
   width: 100%;
   height: 100%;
+}
+.cp-dragging .cp-drag {
+  background-color: rgba(0,0,0,0.4);
+  cursor: move;
+}
+.cp-drag {
+  background-color: inherit;
+  height:20px;width:100%;position:absolute;top:0;left:0;z-index: 10;
+}
+.cp-drag:hover {
+  /* background-color:black; */
 }
 
 .noUi-connect {

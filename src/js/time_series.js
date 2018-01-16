@@ -22,6 +22,7 @@ function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors
     var width = total_width - margin.right - margin.left;
     var overall = document.createElement('div');
     overall.setAttribute("id", div_id+unique+"_overall");
+    setupDragableWindow(overall);
     var handle = document.createElement("div");
     //handle.setAttribute("class","handle");
     //overall.appendChild(handle);
@@ -41,7 +42,7 @@ function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors
     overall.appendChild(bottom_row);
     var line;
     var traces;
-    
+
 
     var x_axis;
     var y_axis;
@@ -51,7 +52,7 @@ function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors
     var y_grid;
     var chart;
     var chartBody;
-    
+
     var draw_plot_region = function(){
         if (xchange){
             xchange = false;
@@ -93,7 +94,7 @@ function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors
     var BC2 = document.createElement('div');
     BC2.setAttribute("id", div_id+unique+"BC2");
     BC2.setAttribute("class", "v_button_container");
-    top_row.insertBefore(BC2,top_row.firstChild); 
+    top_row.insertBefore(BC2,top_row.firstChild);
     //$("#"+div_id+unique+"top").prepend("<div class ='v_button_container' id = \""+div_id+unique+"BC2\" >");
     var vp = document.createElement('button');
     vp.setAttribute("id",div_id+unique+"VP");
@@ -110,11 +111,11 @@ function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors
     BC2.appendChild(vp);
     BC2.appendChild(vrs);
     BC2.appendChild(vm);
-    
+
     var BC1 = document.createElement('div');
     BC1.setAttribute("id", div_id+unique+"BC1");
     BC1.setAttribute("class", "v_button_container");
-    top_row.insertBefore(BC1,top_row.firstChild); 
+    top_row.insertBefore(BC1,top_row.firstChild);
     var op = document.createElement('button');
     op.setAttribute("id",div_id+unique+"OI");
     op.setAttribute('class','scaler');
@@ -169,7 +170,7 @@ function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors
     }
     document.addEventListener("click",function(event){
         switch(event.target.id){
-            case div_id+unique+"VM": 
+            case div_id+unique+"VM":
                 var parent_range = y_range[1] - y_range[0];
                 var parent_mid = (y_range[1] - y_range[0])/2 + y_range[0];
                 y_range[1] = (y_range[1] - parent_mid)*2+parent_mid;
@@ -221,4 +222,3 @@ function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors
         }
     });
 };
-

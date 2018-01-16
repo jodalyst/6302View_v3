@@ -35,15 +35,16 @@ function Toggle(div_id,title,unique,names=["OFF","ON"],socket=null){
         slider_input.setAttribute("value",1);
         slider_input.setAttribute("name", div_id+unique+"_checkbox");
         label = document.createElement("label");
-        label.setAttribute("for",div_id+unique+"_checkbox"); 
+        label.setAttribute("for",div_id+unique+"_checkbox");
         holder.setAttribute("class", "toggle");
         holder.appendChild(title_disp);
         holder.appendChild(value_div);
         holder.appendChild(slider);
+  			setupDragableWindow(holder);
         slider.appendChild(slider_input);
         slider.appendChild(label);
         built = true;
-         
+
     }
 
     this.update = function(value){
@@ -64,8 +65,8 @@ function Toggle(div_id,title,unique,names=["OFF","ON"],socket=null){
         if (socket != null){
             socket.emit('reporting', {'unique':unique, 'data':slider_input.checked});
         }
-        document.dispatchEvent(ui_change);        
-    }     
+        document.dispatchEvent(ui_change);
+    }
     slider_input.addEventListener('change', checko, false);
 
     if (socket != null){

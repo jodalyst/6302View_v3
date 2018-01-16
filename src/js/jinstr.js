@@ -24,7 +24,7 @@ var PLOT_WIDTH = 300;
 
 //constants used for WS state machine:
 var IDLE = 0;
-var BUILDING = 1; 
+var BUILDING = 1;
 var UPDATE =2;
 var RUNNING = 3;
 //system state variable for WS state machine
@@ -36,7 +36,7 @@ var recording_csv = false;
 var csv_header_inputs = []; //headers of inputs in order
 var csv_header_outputs = []; //headers of outputs in order
 
-var csv_dom; 
+var csv_dom;
 
 //
 var toggle_sliders = []; //array of hooks for toggle and slider objects
@@ -55,15 +55,15 @@ var gui_land = document.getElementById("gui_land"); //where draggables end up!
 
 
 
-window.onfocus = function () { 
+window.onfocus = function () {
   console.log("IN FOCUS");
-  isActive = true; 
+  isActive = true;
   document.body.style.background = "#fcfff4";
-}; 
+};
 
-window.onblur = function () { 
+window.onblur = function () {
   console.log("OUT OF FOCUS");
-  isActive = false; 
+  isActive = false;
   document.body.style.background = "red";
 };
 
@@ -103,14 +103,14 @@ document.getElementById("ipsubmit").addEventListener("mousedown",function(){
     ws.onopen = function(){
       // Web Socket is connected, send data using send()
       console.log("web socket established");
-    }; 
+    };
     ws.onmessage = function (evt) {
         MessageParser(evt);
     };
- 
-    ws.onclose = function(){ 
+
+    ws.onclose = function(){
       // websocket is closed.
-      console.log("Connection is closed..."); 
+      console.log("Connection is closed...");
     };
 });
 
@@ -127,7 +127,7 @@ var MessageParser = function(evt){
                 WipeGUI();
                 unique_counter = 0;
                 csv_header_inputs = [];
-                csv_header_outputs = []; 
+                csv_header_outputs = [];
             }
             break;
         case BUILDING:
@@ -287,20 +287,20 @@ var array_equals = function (array1,array2) {
     if (!array1||!array2)
         return false;
 
-    // compare lengths - can save a lot of time 
+    // compare lengths - can save a lot of time
     if (array1.length != array2.length)
         return false;
 
     for (var i = 0, l=array1.length; i < l; i++) {
         if (array1[i] instanceof Array && array2[i] instanceof Array) {
             if(!array_equals(array1[i],array2[i])){
-                return false;       
+                return false;
             }
-        }           
-        else if (array1[i] != array2[i]) { 
-            return false;   
-        }           
-    }       
+        }
+        else if (array1[i] != array2[i]) {
+            return false;
+        }
+    }
     return true;
 }
 
@@ -314,7 +314,11 @@ var isDrag = false;
 //window.addEventListener("load", function(){
 document.addEventListener("field_built",function(){
   //document.addEventListener("load", function(){
-    console.log("we did it!");  
+    console.log("we did it!");
+
+  // To make everything draggable we are adding a layer of stuff
+
+
   // external js: packery.pkgd.js, draggabilly.pkgd.js
   pckry = new Packery( '.cp', {
     itemSelector: '.cp-item',
@@ -322,7 +326,7 @@ document.addEventListener("field_built",function(){
   });
   // collection of Draggabillies
   pckry.getItemElements().forEach( function( itemElem ) {
-    var draggie = new Draggabilly( itemElem ,{handle:'.handle'});
+    var draggie = new Draggabilly( itemElem ,{handle:'.cp-drag'});
     draggies.push(draggie);
     pckry.bindDraggabillyEvents( draggie );
     draggie['disable']();
@@ -332,9 +336,10 @@ document.addEventListener("field_built",function(){
 
 document.getElementById("grid_lock").addEventListener("change",function() {
     // check if checkbox is checked
-    console.log(pckry);
-    console.log(draggies);
+    // console.log(pckry);
+    // console.log(draggies);
     console.log(document.getElementById("grid_lock").checked);
+    console.log(isDrag);
     var method = isDrag ? 'disable' : 'enable';
     draggies.forEach( function( draggie ) {
         draggie[ method ]();
@@ -343,8 +348,10 @@ document.getElementById("grid_lock").addEventListener("change",function() {
     isDrag = !isDrag;
     if (isDrag){
         document.getElementById("grid_status").innerHTML = "Grid UnLocked";
-    }else{
+        document.getElementById("gui_land").className = "cp cp-dragging";
+    } else{
         document.getElementById("grid_status").innerHTML = "Grid Locked";
+        document.getElementById("gui_land").className = "cp";
     }
     /*if (document.querySelector('#my-checkbox').checked) {
       // if checked

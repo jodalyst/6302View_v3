@@ -28,21 +28,39 @@
 </div>
 
 <div id="gui_land" class="cp">
+  <div class="cp-item" id="pos_1"></div>
+  <div class="cp-item" id="pos_2"></div>
+  <div class="cp-item" id="pos_3"></div>
+  <div class="cp-item" id="pos_4"></div>
 </div>
 
 
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="/src/js/packery.pkgd.min.js"></script>
 <script src="/src/js/draggabilly.pkgd.min.js"></script>
+<script src="/src/js/nipplejs.min.js"></script>
+<script src="/src/js/globals.js" ></script>
 <script src="/src/js/nouislider.min.js" ></script>
 <script src="/src/js/jinstr.js" ></script>
 <script src="/src/js/time_series.js" ></script>
 <script src="/src/js/pushbutton.js" ></script>
 <script src="/src/js/toggle.js" ></script>
 <script src="/src/js/slider.js" ></script>
+<script src="/src/js/joystick.js" ></script>
 <link rel="stylesheet" type="text/css" href="/src/css/checkboxes.min.css">
 <link rel="stylesheet" type="text/css" href="/src/css/nouislider.min.css">
 <link rel="stylesheet" type="text/css" href="/src/css/gui.css">
+<script>
+window.onload = function(){
+  var pb3 = new PushButton("pos_1",3+1,"Actuator","Fire");
+  var slider1 = new Slider("pos_2","K_p",0,20,0.1,false,56+3);
+  var slider1 = new Slider("pos_3","K_d",0,5,0.01,true,7+3);
+  var joystick = new Joystick("pos_4","K_d3",0,5,0.01,2+3);
 
+
+  document.dispatchEvent(new Event("field_built"));
+}
+
+</script>
 </body>
 </html>
