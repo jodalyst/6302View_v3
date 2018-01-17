@@ -33,7 +33,7 @@ function Joystick(div_id,name,mode,size,color,unique,catchdistance=null,config=f
 			stick.setAttribute("class", "stick_holder");
 			joystick = nipplejs.create({
 		        zone: stick,
-		        mode: 'static',
+		        mode: 'dynamic',
 		        position: {left: '50%', top: '50%'},
 		        color: 'red'
 		  });
