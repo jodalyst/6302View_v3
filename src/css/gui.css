@@ -57,6 +57,21 @@ svg {
     flex-direction: column;
     vertical-align: middle;
 }
+.item-header {
+  padding: 2px 20px 2px 10px;
+  height:30px;
+  margin: auto;
+  /* width: 300px; */
+  text-align: center;
+}
+.item-container {
+  padding: 2px 20px 2px 20px;
+}
+.item-label {
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+}
 
 .number_title {
     margin-top: 10px;
@@ -278,6 +293,7 @@ svg {
     width: 150px;
 }
 .stick_holder {
+  /* position:absolute; */
   width:140px;
   height:140px;
   vertical-align: middle;

@@ -1,7 +1,9 @@
-function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors, unique, socket=null){
-    var div_id = div_id;
-    var title = title;
-    var unique = unique;
+function Time_Series(title,width,height,x_range,y_range,num_traces,colors, socket=null){
+    var item = new Item(title);
+    var div_id = item.div_id;
+    var unique = item.unique;
+    var overall = item.container;
+    item.setSize(width+100,height+30);
     var socket = socket;
     var colors = colors;
     var y_range_orig = y_range.slice(0); //used for reset mechanisms.
@@ -11,27 +13,15 @@ function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors
     var vals = x_range;
     var total_height = height;
     var xchange = false;
-    var margin = {top: 20, right: 30, bottom: 30, left: 40};
+    var margin = {top: 5, right: 0, bottom: 30, left: 40};
     var data = [];
     for (var i = 0; i<num_traces; i++){
         data.push(d3.range(vals).map(function() { return 0; }));
     }
     var height = total_height - margin.top - margin.bottom;
     var total_width = width;
-    var overall_div = document.getElementById(div_id);  //overall handler to that dom element
     var width = total_width - margin.right - margin.left;
-    var overall = document.createElement('div');
     overall.setAttribute("id", div_id+unique+"_overall");
-    setupDragableWindow(overall);
-    var handle = document.createElement("div");
-    //handle.setAttribute("class","handle");
-    //overall.appendChild(handle);
-    document.getElementById(div_id).appendChild(overall);
-    var title_div = document.createElement('div');
-    title_div.setAttribute("id", div_id+unique+"_title");
-    title_div.setAttribute("class","plot_title handle");
-    title_div.innerHTML = title;
-    overall.appendChild(title_div);
     var top_row = document.createElement('div');
     top_row.setAttribute('id', div_id+unique+"top");
     top_row.setAttribute('class',"chart");
@@ -145,7 +135,7 @@ function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors
     BC4.appendChild(hm);
     BC4.appendChild(hrs);
     BC4.appendChild(hp);
-    this.step = function(values){
+    item  .step = function(values){
             for (var i=0; i<values.length; i++){
                 traces[i].attr("d",line).attr("transform",null);
                 for (var j=0; j<values[i].length;j++){
@@ -221,4 +211,5 @@ function Time_Series(div_id,title,width,height,x_range,y_range,num_traces,colors
                 break;
         }
     });
+    return item;
 };

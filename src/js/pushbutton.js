@@ -1,38 +1,29 @@
-function PushButton(div_id,unique,title,label,color=null,bg_color=null,socket=null){
-    var div_id = String(div_id);
+function PushButton(title,label,color=null,bg_color=null,socket=null){
+  var item = new Item(title);
+	var div_id = item.div_id;
+  var unique = item.unique; //unique identifying number
     var label = String(label);
     var color = color;
-    var title = String(title);
     var bg_color = bg_color;
     var value; //holds toggle value right now
-    var unique = String(unique); //unique identifying number
     var socket = socket;
-    var overall_div = document.getElementById(div_id);
-    var holder;
+    var holder = item.container;
     var button_element;
     var setup = function(){
-        var button_title = document.createElement("div");
-        button_title.innerHTML=title;
-        var handle = document.createElement("div");
-        handle.setAttribute("class","handle");
-        holder = document.createElement("div");
-        holder.setAttribute("id", div_id+unique+"_holder");
-        holder.setAttribute("class", "button_holder");
-        holder.appendChild(button_title);
-        overall_div.appendChild(handle);
-        overall_div.appendChild(holder);
-        button_element = document.createElement("button");
-        button_element.setAttribute("class","gui_button");
-        button_element.setAttribute("id",div_id+unique+"button");
-        button_element.innerHTML = label;
-        setupDragableWindow(holder);
-        holder.appendChild(button_element);
+      button_element = document.createElement("button");
+      button_element.setAttribute("class","gui_button");
+      button_element.setAttribute("id",div_id+unique+"button");
+      button_element.innerHTML = label;
+      var centered = createDiv_centered();
+      centered.appendChild(button_element);
+      holder.appendChild(centered);
+      item.setSize(height=200,width=100);
 
-        if (bg_color===null || color===null){
-            console.log("no color");
-        }else{
-            button_element.setAttribute("style","background-color:"+bg_color+";color: "+color);
-        }
+      if (bg_color===null || color===null){
+          console.log("no color");
+      }else{
+          button_element.setAttribute("style","background-color:"+bg_color+";color: "+color);
+      }
         //$("#"+div_id+unique+"_holder").trigger("create");
     }
     setup();

@@ -1,3 +1,7 @@
+//Simplified
+
+
+
 function Bar_Parallel_Plot(div_id,name,num_values,labels,plot_width,plot_height,max_val,min_val,color,unique){
 
   var start_max = max_val;

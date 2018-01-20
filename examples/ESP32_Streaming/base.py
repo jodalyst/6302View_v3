@@ -42,7 +42,7 @@ def index():
     #    thread = Thread(target=dataThread)
     #    thread.daemon = True
     #    thread.start()
-    return render_template('base_prebuilt_dev.html')
+    return render_template('base.html')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)

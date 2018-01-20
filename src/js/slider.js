@@ -1,6 +1,5 @@
 /*
 Default Slider module:
-div_id: The div_id to which you want to attach the slider
 label: The label (title) of the slider
 min: The minimum value you want the slider to be able to output
 max: The maximum value you want the slider to be able to output
@@ -11,15 +10,14 @@ color: (default null): Unsupported right now
 socket: (default null): a standard websocket object for outside communication emission
 */
 
-function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socket=null){
-    var div_id = String(div_id);
+function Slider(label,min, max, resolution,toggle,color=null,socket=null){
+  var item = new Item(label);
+	var div_id = item.div_id;
+  var unique = item.unique; //unique identifying number
+  var holder = item.container;
     var label = String(label);
     var color = color;
-    var unique = String(unique); //unique identifying number
     var socket = socket;
-    console.log(div_id);
-    var overall_div = document.getElementById(div_id);
-    var holder;
     var min = parseFloat(min);
     var max = parseFloat(max);
     var slider_element;
@@ -44,19 +42,9 @@ function Slider(div_id,label,min, max, resolution,toggle,unique,color=null,socke
     var event = new Event('change');
 
     var setup = function(){
-        //var handle = document.createElement("div");
-        //handle.setAttribute("class","handle");
-        holder = document.createElement("div");
-        holder.setAttribute("id", div_id+unique+"_holder");
-        holder.setAttribute("class", "slider_holder");
 
-        setupDragableWindow(holder);
-        //holder.appendChild(handle);
-        overall_div.appendChild(holder);
-        var label_element = document.createElement("div");
-        label_element.setAttribute("class","slider_label handle");
-        label_element.innerHTML = label;
-        holder.appendChild(label_element);
+      item.setSize(height=300,width=150);
+
         slider_element = document.createElement("div");
         slider_element.setAttribute("id", div_id+unique+"slider");
         holder.appendChild(slider_element);

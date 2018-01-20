@@ -311,14 +311,8 @@ var pckry;
 var draggies = [];
 var isDrag = false;
 
-//window.addEventListener("load", function(){
 document.addEventListener("field_built",function(){
-  //document.addEventListener("load", function(){
-    console.log("we did it!");
-
-  // To make everything draggable we are adding a layer of stuff
-
-
+  console.log("we did it!");
   // external js: packery.pkgd.js, draggabilly.pkgd.js
   pckry = new Packery( '.cp', {
     itemSelector: '.cp-item',
@@ -326,12 +320,16 @@ document.addEventListener("field_built",function(){
   });
   // collection of Draggabillies
   pckry.getItemElements().forEach( function( itemElem ) {
-    var draggie = new Draggabilly( itemElem ,{handle:'.cp-drag'});
+    var draggie = new Draggabilly(itemElem,{handle:'.cp-drag'});
     draggies.push(draggie);
+
+    draggie.on( 'dragEnd', function( event, pointer ) {
+      event.originalTarget.dispatchEvent(new Event("item-didMove"));
+    });
+
     pckry.bindDraggabillyEvents( draggie );
     draggie['disable']();
   });
-
 });
 
 document.getElementById("grid_lock").addEventListener("change",function() {
@@ -353,11 +351,4 @@ document.getElementById("grid_lock").addEventListener("change",function() {
         document.getElementById("grid_status").innerHTML = "Grid Locked";
         document.getElementById("gui_land").className = "cp";
     }
-    /*if (document.querySelector('#my-checkbox').checked) {
-      // if checked
-      console.log('checked');
-    } else {
-      // if unchecked
-      console.log('unchecked');
-    }*/
   });

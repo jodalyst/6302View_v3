@@ -1,0 +1,7 @@
+function Template(title){
+  var item = new Item(title);
+  var div_id = item.div_id;
+  var unique = item.unique;
+  var overall = item.container;
+  return item;
+}
