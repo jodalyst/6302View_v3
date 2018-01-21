@@ -23,12 +23,12 @@ function Numerical_Reporter(title,range,color,bg_color,precision=null,socket=nul
   reported.setAttribute('id',div_id+unique+"_number");
   reported.innerHTML = format(value);
   holder.appendChild(reported);
-  
+
   item.step = function(value){
     if (range[1] != null && value> range[1]){
         value = range[1];
     }else if (range[0] != null && value <range[0]){
-        value= range[0];
+        value = range[0];
     }
     reported.innerHTML = format(value)
   };

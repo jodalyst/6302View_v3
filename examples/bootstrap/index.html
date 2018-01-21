@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>6302View</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"> -->
+
+    <!-- Custom fonts for this template -->
+    <!-- <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css"> -->
+    <!-- <link rel="stylesheet" href="vendor/simple-line-icons/css/simple-line-icons.css"> -->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script src="/src/js/globals.js" ></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/src/css/new-age.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/src/css/checkboxes.min.css">
+    <link rel="stylesheet" type="text/css" href="/src/css/nouislider.min.css">
+    <link rel="stylesheet" type="text/css" href="/src/css/index.css">
+
+
+  </head>
+
+  <body id="page-top">
+
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-heading text-center">
+          <h2>6302View</h2>
+          <hr>
+        </div>
+        <div class="row">
+          <p><i>Enter the IP address printed from your microcontroller's Serial readout here, press Submit/Connect, and start working.</i></p>
+          <p>Local IP: <input type="text" name="ipaddress" id="ipaddress"/><button id="ipsubmit" style="vertical-align:middle"><span>Submit/Connect</span></button></p>
+          <div>
+          <h3 id="grid_status">Grid Locked</h3>
+          <div class="ckbx-style-8">
+              <input type="checkbox" id="grid_lock" name="hey">
+              <label for="grid_lock"></label>
+          </div>
+            <h3 id="grid_status">CSV Generate?</h3>
+            <div class="ckbx-style-8">
+                <input type="checkbox" id="csv_enable" value="1" name="csv_enable">
+                <label for="csv_enable"></label>
+            </div>
+            <p>CSV Name: <input type="text" name="csv_name" id="csv_name"/></p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <header class="masthead" style="padding-top:20px">
+      <!-- <div class="container"> -->
+          <div id="gui_land" class="cp">
+
+          </div>
+      <!-- </div> -->
+    </header>
+
+        <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script src="/src/js/packery.pkgd.min.js"></script>
+        <script src="/src/js/draggabilly.pkgd.min.js"></script>
+        <script src="/src/js/nouislider.min.js" ></script>
+        <script src="/src/js/nipplejs.min.js"></script>
+        <script src="/src/js/item.js" ></script> <!-- For polymorphism -->
+        <script src="/src/js/globals.js" ></script>
+        <script src="/src/js/jinstr.js" ></script>
+        <script src="/src/js/pushbutton.js" ></script>
+        <script src="/src/js/div_render.js" ></script>
+        <script src="/src/js/toggle.js" ></script>
+        <script src="/src/js/slider.js" ></script>
+        <script src="/src/js/joystick.js" ></script>
+        <script src="/src/js/parallel.js" ></script>
+
+        <script src="/src/js/wNumb.js" ></script>
+        <script src="/src/js/numerical_reporter.js" ></script>
+
+
+        <script src="/src/js/time_series.js" ></script>
+    <script>
+    //constants used for plot sizing:
+    var PLOT_HEIGHT = 200;
+    var PLOT_WIDTH = 300;
+    window.onload = function(){
+      setGlobals("gui_land");
+      console.log("HI");
+      var pb3 = new PushButton("Actuator","Fire");
+      var num = new Numerical_Reporter("hello",[0,100],"red");
+      var parallels = new Parallel_Plot("PLOT",PLOT_WIDTH,PLOT_HEIGHT,100,[-200,200],3,["green","yellow","blue"])
+      var slider1 = new Slider("K_p",0,20,0.1,false);
+      var slider1 = new Slider("K_d",0,5,0.01,true,);
+      var joystick = new Joystick("K_d3",mode="static",color="blue");
+      var div2 = new Div_Render("Value");
+      var toggle = new Toggle("Wtf");
+      var series = new Time_Series('Accelerations',PLOT_WIDTH, PLOT_HEIGHT,60,[-100,100],3,["green","yellow","blue"]);
+      timer = setInterval(function(){
+          series.step([[mouseX],[mouseY]]);
+      }, 10);
+      var left = [];
+      var right = [];
+      // timer = setInterval(function(){
+      //     left.push(mouseX-100);
+      //     right.push(mouseY-100);
+      //     if (left.length > 100) {
+      //       left.shift();
+      //       right.shift();
+      //     }
+      //     parallels.update([left,right,[30,30]]);
+      // }, 100);
+      div2.update('<h1>HI</h1>');
+
+      document.dispatchEvent(new Event("field_built"));
+    }
+</script>
+  </body>
+
+</html>

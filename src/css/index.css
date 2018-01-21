@@ -6,20 +6,6 @@
   /* fill: brown; */
 }
 
-
-@import url('https://fonts.googleapis.com/css?family=Open+Sans|Raleway');
-
-body {
-    font-family: 'Open Sans', sans-serif;
-    margin: 50px;
-    font-size: 10px;
-    background-color: #fcfff4;
-}
-
-h1 h2 h3 h4 {
-    font-family: 'Open Sans', sans-serif;
-}
-
 .side_note {}
 
 .containing-element .ui-slider-switch {
@@ -385,9 +371,9 @@ svg {
 
 .cp {
   /*background: #DDD;*/
-  max-width: 1200px;
-  border: 2px inset;
-
+  /* max-width: 1200px; */
+  /* border: 2px inset; */
+  height:100%;
 }
 
 /* clear fix */
