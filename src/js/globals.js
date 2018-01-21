@@ -8,3 +8,11 @@ function createDiv_centered() {
   centered.style=  "text-align:center";
   return centered;
 }
+
+function createElementWithIdClassHTML(type,id,cla,html) {
+  var ele = document.createElement(type);
+  ele.setAttribute("id",id);
+  ele.setAttribute('class',cla);
+  ele.innerHTML = html;
+  return ele;
+}

@@ -1,228 +1,242 @@
-function Parallel_Plot(num_values, labels, plot_width, plot_height, max_val, min_val, color, type) {
+function Parallel_Plot(title,width,height,x_range,y_range,num_traces,colors, socket=null){
+    var item = new Item(title);
+    var div_id = item.div_id;
+    var unique = item.unique;
+    var overall = item.container;
+    item.setSize(width+100,height+30);
 
-  var item = new Item(title);
-  var div_id = item.div_id;
-  var unique = item.unique;
-  var overall = item.container;
+    var socket = socket;
+    var colors = colors;
+    var y_range_orig = y_range.slice(0); //used for reset mechanisms.
+    var vals_orig = x_range;
+    var y_range = y_range.slice(0);
+    var num_traces = num_traces;
+    var vals = x_range;
+    var total_height = height;
+    var xchange = false;
+    var margin = {top: 5, right: 0, bottom: 30, left: 40};
+    var data = [];
+    for (var i = 0; i<num_traces; i++){
+        data.push(d3.range(vals).map(function() { return 0; }));
+    }
+    var height = total_height - margin.top - margin.bottom;
+    var total_width = width;
+    var width = total_width - margin.right - margin.left;
+    overall.setAttribute("id", div_id+unique+"_overall");
+    var top_row = document.createElement('div');
+    top_row.setAttribute('id', div_id+unique+"top");
+    top_row.setAttribute('class',"chart");
+    overall.appendChild(top_row);
+    var bottom_row = document.createElement('div');
+    bottom_row.setAttribute('id', div_id+unique+"bot");
+    bottom_row.setAttribute('class',"chart");
+    overall.appendChild(bottom_row);
+    var line;
+    var traces;
 
-  console.log("making a " + type + " graph with id=" + unique + "!");
-  console.log("graph has " + num_values + " number of values!");
-  console.log("graph will be " + color);
+    var x_axis;
+    var y_axis;
+    var x;
+    var y;
+    var x_grid;
+    var y_grid;
+    var chart;
+    var chartBody;
 
-  var start_max = max_val;
-  var start_min = min_val;
-  var self = this; //handles weird scoping issues
-  var margin = {
-    top: 20,
-    right: 30,
-    bottom: 30,
-    left: 40
-  };
-  this.axisPadding = 20 + margin.left;
-  this.dataArray = []; //used to determine spaced needed to allocate for bars
-  for (i = 0; i < num_values; i++) {
-    self.dataArray[i] = 0;
-  }
+    var draw_plot_region = function(){
+        if (xchange){
+            xchange = false;
+            if (vals> data[0].length){//increasing amount
+                for (var i = 0; i<num_traces;i++){
+                    var tempdata = d3.range(vals-data[i].length).map(function() { return 0; });
+                    data[i] = tempdata.concat(data[i]);
+                }
+            }else if (vals< data[0].length){
+                var to_remove = data[0].length-vals;
+                for(var i = 0; i<num_traces; i++){
+                  data[i] = data[i].slice(to_remove);
+                }
+            }
+        }
+        chart = d3.select("#"+div_id+unique+"top").append("svg")
+        .attr("id","svg_for_"+div_id+unique).attr("width",total_width).attr("height",total_height).attr('style',"display:inline-block;").attr("class", "gsc");
+        y = d3.scale.linear().domain([y_range[0],y_range[1]]).range([height,0]);
+        x = d3.scale.linear().domain([0,vals]).range([0,width]);
+        x_axis = d3.svg.axis().scale(x).orient("bottom").ticks(11);
+        y_axis = d3.svg.axis().scale(y).orient("left").ticks(11);
+        x_grid = d3.svg.axis().scale(x).orient("bottom").ticks(20).tickSize(-height, 0, 0).tickFormat("");
+        y_grid = d3.svg.axis().scale(y).orient("left").ticks(11).tickSize(-width, 0, 0).tickFormat("");
+        // Grid elements
+        chart.append("g").attr("transform","translate("+margin.left +","+ margin.top + ")");
+        chart.append("g").attr("class", "grid").attr("transform","translate("+margin.left+","+(height+margin.top)+")").call(x_grid);
+        chart.append("g").attr("class", "grid").attr("transform","translate("+margin.left+","+margin.top+")").call(y_grid);
+        clippy = chart.append("defs").append("svg:clipPath").attr("id",div_id+unique+"clip").append("svg:rect").attr("id",div_id+unique+"clipRect").attr("x",margin.left).attr("y",margin.top).attr("width",width).attr("height",height);
+        chartBody = chart.append("g").attr("clip-path","url(#"+div_id+unique+"clip"+")");
+        // line = new d3.svg.line().x(function(d, i) { return x(i)+margin.left; }.bind(this)).y(function(d, i) { return y(d)+margin.top; }.bind(this));
+        // traces = [];
+        // for (var i=0; i<num_traces; i++){
+        //     traces.push(chartBody.append("path").datum(data[i]).attr("class","line").attr("d",line).attr("stroke",colors[i]));
+        // }
+        chart.append("g").attr("class", "x axis").attr("transform","translate("+margin.left+","+(height+margin.top)+")").call(x_axis).selectAll("text")
+        .attr("y", -5).attr("x", 20).attr("transform", "rotate(90)");
+        chart.append("g").attr("class", "y axis").attr("transform","translate("+margin.left+","+margin.top+")").call(y_axis);
 
-  //create scale for bars
-  var scaler = d3.scale.linear()
-    .domain([min_val, max_val])
-    .range([0, plot_height - margin.top - margin.bottom]);
+        var w = (width/vals);
+        var change = Math.min(w/6,2);
+        if (w<10) {
+          change = 0;
+        }
+        var pph = height/(y_range[1]-y_range[0]); //Pixel per unit;
+        chart.selectAll(".bar")
+          .data(data[0])
+          .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function(d,i) {
+              return margin.left + (width/vals)*i + change;
+            })
+            .attr("y", function(d) {
+              var ptop =  margin.top + (y_range[1]-d)*pph;
+              if (d < 0) {
+                ptop = margin.top + y_range[1]*pph;
+              }
+              return ptop;
+            })
+            .attr("width", (width/vals - change*2)+"px")
+            .attr("height", function(d) {
+              var ptop =  margin.top + (y_range[1]-d)*pph;
+              if (d < 0) {
+                ptop = margin.top + y_range[1]*pph;
+              }
+              var other =  Math.abs(d)*pph;
+              if (Math.abs(d)*pph + ptop > height) {
+                other = height - ptop;
+              }
+              return Math.min(Math.abs(d)*pph,other);
+            });
 
-  //used to place labels for the x axis, also if type is line then also used to place circles
-  var ticks = [];
-  for (i = 0; i < num_values; i++) {
-    ticks[i] = (i * (plot_width - self.axisPadding) / self.dataArray.length) + self.axisPadding + ((plot_width - self.axisPadding) / self.dataArray.length - 20) / 2;
-  }
-  var tickLabels = labels;
-  var max = (plot_height - margin.top);
-  var min = (margin.bottom + min_val);
-  // var overall = d3.select("#" + div_id).append("div").attr("id",div_id + unique + "_overall");
-  var overall = $(overall);
-  var title = overall.append("div").attr("class", "plot_title").attr("id", div_id + unique + "_title").html(div_id);
-  var top = overall.append("div").attr("class", "chart").attr("id", div_id + unique + "top");
+        console.log("WIDTH: " + width + " VALS: " + vals);
+        console.log(y_range[0]);
+        console.log(y_range[1]);
+    };
+    draw_plot_region();
 
-  $("#" + div_id + unique + "top").prepend("<div class ='v_button_container' id = \"" + div_id + unique + "BC2\" >");
-  $("#" + div_id + unique + "BC2").append("<button class='scalerp' id=\"" + div_id + unique + "VP\">Z+</button>");
-  $("#" + div_id + unique + "BC2").append("<button class='scalerp' id=\"" + div_id + unique + "RS\">RS</button>");
-  $("#" + div_id + unique + "BC2").append("<button class='scalerp' id=\"" + div_id + unique + "VM\">Z-</button>");
-  $("#" + div_id + unique + "top").prepend("<div class ='v_button_container' id = \"" + div_id + unique + "BC1\" >");
-  $("#" + div_id + unique + "BC1").append("<button class='scalerp' id=\"" + div_id + unique + "OI\">O+</button>");
-  $("#" + div_id + unique + "BC1").append("<button class='scalerp' id=\"" + div_id + unique + "OD\">O-</button>");
+    var createNavigationButtons = function() {
+      var div_start = div_id+unique;
 
-  function build_plot() {
-    //create x axis scale
-    var xScale = d3.scale.linear().domain([margin.left, plot_width]).range([margin.left, plot_width]);
-    //create y axis scale
-    var yScale = d3.scale.linear()
-      .domain([min_val, max_val])
-      .range([plot_height - margin.top, margin.bottom]);
+      var BC2 = createElementWithIdClassHTML('div',div_start+"BC2","v_button_container","");
+      top_row.insertBefore(BC2,top_row.firstChild);
 
-    //create svg
-    this.svg = top.append("svg")
-      .attr("height", plot_height + "px")
-      .attr("width", plot_width + "px")
-      .style("display", "inline-block")
-      .attr("id", "svg_for_p" + unique);
-    this.svg.append("defs").append("svg:clipPath").attr("id", unique + "clip")
-      .append("svg:rect").attr("id", unique + "clipRect").attr("x", margin.left)
-      .attr("y", margin.top).attr("width", plot_width - margin.left).attr("height", plot_height - margin.bottom - margin.top);
+      var vp = createElementWithIdClassHTML('button',div_start+"VP",'scaler','Z+');
+      var vrs = createElementWithIdClassHTML('button',div_start+"VRS",'scaler','RS');
+      var vm = createElementWithIdClassHTML('button',div_start+"VM",'scaler','Z-');
+      BC2.appendChild(vp);
+      BC2.appendChild(vrs);
+      BC2.appendChild(vm);
 
-    //create x axis
-    this.xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickValues(ticks)
-      .tickFormat(function(d, i) {
-        return tickLabels[i]
-      });
+      var BC1 = createElementWithIdClassHTML('div',div_start+"BC1","v_button_container","");
+      top_row.insertBefore(BC1,top_row.firstChild);
 
-    this.svg.append("g").attr("class", "x axis").call(this.xAxis).attr("transform", "translate(0," + (plot_height - margin.bottom) + ")");
+      var op = createElementWithIdClassHTML('button',div_start+"OI",'scaler','O+');
+      var od = createElementWithIdClassHTML('button',div_start+"OD",'scaler','O-');
+      BC1.appendChild(op);
+      BC1.appendChild(od);
 
-    //create y axis
-    this.yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(15).tickValues(yScale.ticks().concat(yScale.domain()));
-    this.svg.append("g").attr("class", "y axis").attr("transform", "translate(" + margin.left + "," + (margin.top - margin.bottom) + ")").call(this.yAxis);
+      var BC4 = createElementWithIdClassHTML('div',div_start+"BC1","h_button_container","");
+      bottom_row.appendChild(BC4);
 
-    //create the grid
-    this.y_grid = d3.svg.axis().scale(yScale).orient("left").ticks(15).tickSize(-plot_width, 1, 1).tickFormat("").tickValues(yScale.ticks().concat(yScale.domain()));
-    this.svg.append("g").attr("class", "grid")
-      .attr("transform", "translate(" + margin.left + "," + (margin.top - margin.bottom) + ")").call(this.y_grid);
+      var hm = createElementWithIdClassHTML('button',div_start+"HM",'scaler','Z-');
+      var hrs = createElementWithIdClassHTML('button',div_start+"HRS",'scaler','RS');
+      var hp = createElementWithIdClassHTML('button',div_start+"HP",'scaler','Z+');
 
-    if (type == "bar") {
-      //make the bars
-      this.svg.append("g").attr("class", "bar_container").selectAll("rect")
-        .data(self.dataArray).enter().append("rect")
-        .attr("height", function(d, i) {
-          return scaler(d);
-        })
-        .attr("width", function() {
-          return (plot_width - self.axisPadding) / self.dataArray.length - 20;
-        })
-        .attr("x", function(d, i) {
-          return (i * (plot_width - self.axisPadding) / self.dataArray.length) + self.axisPadding;
-        })
-        .attr("transform", "scale(1,-1) translate(0,-200)")
-        .attr("y", function(d, i) {
-          return plot_height - d / 10 + "px";
-        }).attr("class", "bar")
-        .style("fill", color);
-    } else if (type == "line") {
-      //make lines
-      this.svg.append("g").attr("class", "bar_container").attr("clip-path", "url(#" + unique + "clip)").selectAll("circle")
-        .data(self.dataArray).enter().append("circle")
-        .attr("cy", function(d, i) {
-          return scaler(d);
-        })
-        .attr("stroke", color)
-        .attr("stroke-width", "3")
-        .attr("r", "1")
-        .attr("cx", function(d, i) {
-          return ticks[i];
-        })
-        .attr("class", "circle_parallel")
-        .style("fill", color);
-      for (i = 0; i < self.dataArray.length - 1; i++) {
+      BC4.appendChild(hm);
+      BC4.appendChild(hrs);
+      BC4.appendChild(hp);
+    }
+    createNavigationButtons();
 
-        d3.select("#svg_for_p" + unique).select(".bar_container").append("line")
-          .attr("id", "line" + i)
-          .attr("x1", ticks[i])
-          .attr("y1", function(d, i) {
-            return scaler(d);
-          })
-          .attr("y2", function(d, i) {
-            return scaler(d);
-          })
-          .attr("x2", ticks[i + 1])
-          .attr("stroke", color)
-          .attr("stroke-width", "1");
+    item.step = function(values){
+      for (var i=0; i<values.length; i++){
+          traces[i].attr("d",line).attr("transform",null);
+          for (var j=0; j<values[i].length;j++){
+              data[i].push(values[i][j]);
+              data[i].shift();
+          }
       }
-
+    };
+    item.update = function(values) {
+      for (var i=0; i<values.length; i++){
+          data[i] = [];
+          for (var j=0; j<values[i].length;j++){
+              data[i].push(values[i][j]);
+          }
+      }
+      update_scales();
     }
-  }
-  build_plot();
+    var steppo = this.step; //need to do this for scoping issues when we get inside the socket callback!
+    var update_scales = function(){
+        d3.select("#svg_for_"+div_id+unique).remove();
+        draw_plot_region();
+    };
+    if (socket != null){
+        socket.on("update_"+unique,function(values){steppo(values);});
 
-  function update_scale() {
-    yScale = d3.scale.linear()
-      .domain([min_val, max_val])
-      .range([max, min]);
-    scaler = d3.scale.linear()
-      .domain([min_val, max_val])
-      .range([0, plot_height - margin.top - margin.bottom]);
-    update_graph();
-  }
-
-  $(document).on("click", ".scalerp", function(event) {
-    // console.log(event.target.id);
-    switch (event.target.id) {
-      case div_id + unique + "VM":
-        max_val = max_val * 2;
-        update_scale();
-        console.log("minus!");
-        break;
-      case div_id + unique + "VP":
-        max_val = max_val / 2;
-
-        update_scale();
-        console.log("plus!");
-        break;
-      case div_id + unique + "RS":
-        max_val = start_max;
-        min_val = start_min;
-
-        update_scale();
-        console.log("reset!");
-        break;
-
-      case div_id + unique + "OI":
-        max_val -= start_max * 0.2;
-        min_val -= start_max * 0.2;
-        update_scale();
-        console.log("offset increase!");
-        break;
-
-      case div_id + unique + "OD":
-        max_val += start_max * 0.2;
-        min_val += start_max * 0.2;
-        update_scale();
-        console.log("offset!");
-        break;
-    }
-  });
-
-  function update_graph() {
-    console.log(yScale(5));
-    //remove svg
-    d3.select("#svg_for_p" + unique).remove();
-    build_plot();
-
-  }
-  var element = d3.select(".x.axis").node();
-  var bottom_padding = element.getBoundingClientRect().height;
-  console.log("gonna add this " + bottom_padding);
-
-  this.step_p = function(values) {
-    var newData = [];
-    for (i = 0; i < values.length; i++) {
-      newData[i] = scaler(values[i]);
-    }
-    if (type == "bar") {
-      d3.select("#svg_for_p" + unique).selectAll(".bar")
-        .attr("transform", "scale(1,-1)")
-        .attr("height", function(d, i) {
-          return (newData[i] + "px");
-        })
-        .attr("y", function(d, i) {
-          return -1 * plot_height + margin.bottom;
+        socket.on("state_report_"+unique,function(){
+            socket.emit('reporting_state_'+unique,{'xrange':vals,'yrange':vals});
         });
-    } else if (type == "line") {
-      d3.select("#svg_for_p" + unique).selectAll(".circle_parallel")
-        .attr("cy", function(d, i) {
-          return (newData[i]);
-        })
-        .attr("transform", "scale(1,-1) translate(0," + -1 * (plot_height - margin.bottom) + ")");
-      for (i = 0; i < newData.length - 1; i++) {
-        d3.select("#svg_for_p" + unique).select("#line" + i)
-          .attr("y1", newData[i])
-          .attr("y2", newData[i + 1])
-          .attr("transform", "scale(1,-1) translate(0," + -1 * (plot_height - margin.bottom) + ")");
-      }
+
     }
-  }
-}
+    document.addEventListener("click",function(event){
+        switch(event.target.id){
+            case div_id+unique+"VM":
+                var parent_range = y_range[1] - y_range[0];
+                var parent_mid = (y_range[1] - y_range[0])/2 + y_range[0];
+                y_range[1] = (y_range[1] - parent_mid)*2+parent_mid;
+                y_range[0] = parent_mid-(parent_mid - y_range[0])*2;
+                update_scales();
+                break;
+            case div_id+unique+"VP":
+                var parent_range = y_range[1] - y_range[0];
+                var parent_mid = (y_range[1] - y_range[0])/2 + y_range[0];
+                y_range[1] = (y_range[1] - parent_mid)*0.5+parent_mid;
+                y_range[0] = parent_mid-(parent_mid - y_range[0])*0.5;
+                update_scales();
+                break;
+            case div_id+unique+"VRS":
+                y_range =y_range_orig.slice(0);
+                update_scales();
+                break;
+            case div_id+unique+"HM":
+                if (vals > 4){
+                    vals = Math.round(vals/2);
+                }
+                xchange = true;
+                update_scales();
+                break;
+            case div_id+unique+"HP":
+                vals = vals*2;
+                xchange = true;
+                update_scales();
+                break;
+            case div_id+unique+"HRS":
+                vals =vals_orig;
+                xchange = true;
+                update_scales();
+                break;
+            case div_id+unique+"OD":
+                var diff = y_range[1] - y_range[0];
+                var tp = diff*0.1;
+                y_range[1] = y_range[1]+tp;
+                y_range[0] = y_range[0]+tp;
+                update_scales();
+                break;
+            case div_id+unique+"OI":
+                var diff = y_range[1] - y_range[0];
+                var tp = diff*0.1;
+                y_range[1] = y_range[1]-tp;
+                y_range[0] = y_range[0]-tp;
+                update_scales();
+                break;
+        }
+    });
+    return item;
+};

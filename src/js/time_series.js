@@ -81,60 +81,42 @@ function Time_Series(title,width,height,x_range,y_range,num_traces,colors, socke
         chart.append("g").attr("class", "y axis").attr("transform","translate("+margin.left+","+margin.top+")").call(y_axis);
     };
     draw_plot_region();
-    var BC2 = document.createElement('div');
-    BC2.setAttribute("id", div_id+unique+"BC2");
-    BC2.setAttribute("class", "v_button_container");
-    top_row.insertBefore(BC2,top_row.firstChild);
-    //$("#"+div_id+unique+"top").prepend("<div class ='v_button_container' id = \""+div_id+unique+"BC2\" >");
-    var vp = document.createElement('button');
-    vp.setAttribute("id",div_id+unique+"VP");
-    vp.setAttribute('class','scaler');
-    vp.innerHTML = 'Z+';
-    var vrs = document.createElement('button');
-    vrs.setAttribute("id",div_id+unique+"VRS");
-    vrs.setAttribute('class','scaler');
-    vrs.innerHTML = 'RS';
-    var vm = document.createElement('button');
-    vm.setAttribute("id",div_id+unique+"VM");
-    vm.setAttribute('class','scaler');
-    vm.innerHTML = 'Z-';
-    BC2.appendChild(vp);
-    BC2.appendChild(vrs);
-    BC2.appendChild(vm);
 
-    var BC1 = document.createElement('div');
-    BC1.setAttribute("id", div_id+unique+"BC1");
-    BC1.setAttribute("class", "v_button_container");
-    top_row.insertBefore(BC1,top_row.firstChild);
-    var op = document.createElement('button');
-    op.setAttribute("id",div_id+unique+"OI");
-    op.setAttribute('class','scaler');
-    op.innerHTML = 'O+';
-    var od = document.createElement('button');
-    od.setAttribute("id",div_id+unique+"OD");
-    od.setAttribute('class','scaler');
-    od.innerHTML = 'O-';
-    BC1.appendChild(op);
-    BC1.appendChild(od);
-    var BC4 = document.createElement('div');
-    BC4.setAttribute("id", div_id+unique+"BC4");
-    BC4.setAttribute("class", "h_button_container");
-    bottom_row.appendChild(BC4);
-    var hm = document.createElement('button');
-    hm.setAttribute("id",div_id+unique+"HM");
-    hm.setAttribute('class','scaler');
-    hm.innerHTML = 'Z-';
-    var hrs = document.createElement('button');
-    hrs.setAttribute("id",div_id+unique+"HRS");
-    hrs.setAttribute('class','scaler');
-    hrs.innerHTML = 'RS';
-    var hp = document.createElement('button');
-    hp.setAttribute("id",div_id+unique+"HP");
-    hp.setAttribute('class','scaler');
-    hp.innerHTML = 'Z+';
-    BC4.appendChild(hm);
-    BC4.appendChild(hrs);
-    BC4.appendChild(hp);
+
+    var createNavigationButtons = function() {
+      var div_start = div_id+unique;
+
+      var BC2 = createElementWithIdClassHTML('div',div_start+"BC2","v_button_container","");
+      top_row.insertBefore(BC2,top_row.firstChild);
+
+      var vp = createElementWithIdClassHTML('button',div_start+"VP",'scaler','Z+');
+      var vrs = createElementWithIdClassHTML('button',div_start+"VRS",'scaler','RS');
+      var vm = createElementWithIdClassHTML('button',div_start+"VM",'scaler','Z-');
+      BC2.appendChild(vp);
+      BC2.appendChild(vrs);
+      BC2.appendChild(vm);
+
+      var BC1 = createElementWithIdClassHTML('div',div_start+"BC1","v_button_container","");
+      top_row.insertBefore(BC1,top_row.firstChild);
+
+      var op = createElementWithIdClassHTML('button',div_start+"OI",'scaler','O+');
+      var od = createElementWithIdClassHTML('button',div_start+"OD",'scaler','O-');
+      BC1.appendChild(op);
+      BC1.appendChild(od);
+
+      var BC4 = createElementWithIdClassHTML('div',div_start+"BC1","h_button_container","");
+      bottom_row.appendChild(BC4);
+
+      var hm = createElementWithIdClassHTML('button',div_start+"HM",'scaler','Z-');
+      var hrs = createElementWithIdClassHTML('button',div_start+"HRS",'scaler','RS');
+      var hp = createElementWithIdClassHTML('button',div_start+"HP",'scaler','Z+');
+
+      BC4.appendChild(hm);
+      BC4.appendChild(hrs);
+      BC4.appendChild(hp);
+    }
+    createNavigationButtons();
+
     item  .step = function(values){
             for (var i=0; i<values.length; i++){
                 traces[i].attr("d",line).attr("transform",null);
