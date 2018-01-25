@@ -1,3 +1,8 @@
+/*
+  GLOBAL functions for creating elements
+  Updated v 1.1
+*/
+
 function setupDragableWindow(element) {
   var bar = document.createElement("div");
   bar.setAttribute("class","cp-drag");

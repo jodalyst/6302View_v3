@@ -4,6 +4,44 @@ function setGlobals(world_name_in) {
   world_name = world_name_in;
 }
 
+const LOG = new Enum('SYSTEM', 'WARNING','ACTION','DATA');
+function Logger() {
+  /*
+
+  */
+  this.csvContent = "data:text/csv;charset=utf-8,";
+  this.initialize = function() {
+    this.csvContent = "data:text/csv;charset=utf-8,";
+    var timestamp = Date.now();
+    let row = [timestamp,"-1",LOG.SYSTEM.toString(),"Logger Initalized"].join(",");
+    this.csvContent += row + "\r\n";
+  }
+  this.initialize();
+
+  this.download = function() {
+    var encodedUri = encodeURI(this.csvContent);
+    // window.open(encodedUri);
+    link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', new Date().toLocaleString(););
+    link.click();
+  }
+  this.log = function(unique,type,message) {
+    var timestamp = Date.now();
+    let row = [timestamp,unique,type.toString(),message].join(",");
+    this.csvContent += row + "\r\n";
+  }
+  return this;
+}
+
+var logger = Logger();
+
+/* ITEM class
+
+  UPDATE and STEP
+
+*/
+
 function Item(name) {
   this.name = String(name);
   this.unique = unique;
@@ -15,6 +53,8 @@ function Item(name) {
   this.object = document.createElement("div");
   this.object.setAttribute("class","cp-item");
   this.object.id = this.div_id;
+  this.object.item = this;
+
   world.appendChild(this.object);
 
   this.init = function () {
@@ -31,11 +71,10 @@ function Item(name) {
     bar.appendChild(this.windowbar_title);
     var self = this;
 
-    drag.addEventListener('item-didMove',function() {self.itemDidMove(self)});
+    this.object.addEventListener('item-didMove',function() {self.itemDidMove(self)});
     this.object.appendChild(bar);
     this.object.appendChild(container);
 
-    //Event add
     return; //Doesn't return anything
   };
   this.setSize = function(width=300,height=150) {
@@ -44,16 +83,28 @@ function Item(name) {
   }
   this.step = function() {
     console.log("Step Function Defaults");
+    item.logCall("step");
   }
   this.update = function() {
     console.log("Update Function Defaults");
+    item.logCall("update");
   }
+
   this.init();
   this.setSize();
 
-  this.itemDidMove= function() {
-    // console.log(this);
+  this.itemDidMove = function() {
     console.log("Did Move Function Defaults");
+  }
+
+  this.log = function(type,data) {
+    logger.log(this.unique,type,data);
+  }
+  this.logCall = function(funcname) {
+    this.log(LOG.ACTION,funcname);
   }
   unique += 1;
 }
+
+// State anything
+//JSON? keyvalues (widget names, state values) Timestamps?

@@ -1,11 +1,16 @@
-function Toggle(title,names=["OFF","ON"],socket=null){
+/*
+  TOGGLE
+	title
+	names
+  Updated v 1.1
+*/
+function Toggle(title,names=["OFF","ON"]){
     var item = new Item(title);
     var div_id = item.div_id;
     var unique = item.unique;
     var holder = item.container;
     var names = names; //should be 2-long array of values for when switch is low or high
     var val; //holds toggle value right now at any given moment
-    var socket = socket;
     var built = false;
     var title_disp; //title of module
     var slider; //div containing slider
@@ -46,21 +51,16 @@ function Toggle(title,names=["OFF","ON"],socket=null){
     this.value = function(){
         return slider_input.checked?1:0;
     }
-
     setup();
     var checko = function(element){
         if (slider_input.checked){
         }else{
         }
         value_div.innerHTML = names[slider_input.checked?1:0];
-        if (socket != null){
-            socket.emit('reporting', {'unique':unique, 'data':slider_input.checked});
-        }
         document.dispatchEvent(ui_change);
+        item.logCall("update");
+        item.log(LOG.DATA,names[slider_input.checked?1:0]);
     }
     slider_input.addEventListener('change', checko, false);
 
-    if (socket != null){
-        socket.on("update_"+unique,function(va){if (built){console.log(va); console.log(va==true);slider_input.checked=va;}});
-    };
 };

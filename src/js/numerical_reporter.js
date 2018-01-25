@@ -1,4 +1,10 @@
-function Numerical_Reporter(title,range,color,bg_color,precision=null,socket=null){
+/*
+  NUMERICAL_REPORTER
+  title, range (array)
+  Updated v 1.1
+*/
+
+function Numerical_Reporter(title,range,color,bg_color,precision=null){
   var item = new Item(title);
   var div_id = item.div_id;
   var unique = item.unique;
@@ -8,7 +14,6 @@ function Numerical_Reporter(title,range,color,bg_color,precision=null,socket=nul
   var precision = precision;
   var range = range; //shape is : [low,high]..saturate otherwise
   var value = 0.0;
-  var socket = socket;
 
   var format = function(value){
     if (precision==null){
@@ -30,7 +35,10 @@ function Numerical_Reporter(title,range,color,bg_color,precision=null,socket=nul
     }else if (range[0] != null && value <range[0]){
         value = range[0];
     }
-    reported.innerHTML = format(value)
+    reported.innerHTML = format(value);
+
+    item.logCall("step");
+    item.log(LOG.DATA,format(value));
   };
 
 };

@@ -1,3 +1,7 @@
+/*
+  Template for new objects
+  Updated v 1.1
+*/
 function Template(title){
   var item = new Item(title);
   var div_id = item.div_id;

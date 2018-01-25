@@ -1,4 +1,10 @@
-function PushButton(title,label,color=null,bg_color=null,socket=null){
+/*
+  PUSHBUTTON
+	title
+	label
+  Updated v 1.1
+*/
+function PushButton(title,label,color=null,bg_color=null){
   var item = new Item(title);
 	var div_id = item.div_id;
   var unique = item.unique; //unique identifying number
@@ -6,7 +12,6 @@ function PushButton(title,label,color=null,bg_color=null,socket=null){
     var color = color;
     var bg_color = bg_color;
     var value; //holds toggle value right now
-    var socket = socket;
     var holder = item.container;
     var button_element;
     var setup = function(){
@@ -24,28 +29,12 @@ function PushButton(title,label,color=null,bg_color=null,socket=null){
       }else{
           button_element.setAttribute("style","background-color:"+bg_color+";color: "+color);
       }
-        //$("#"+div_id+unique+"_holder").trigger("create");
+      button_element.addEventListener("mousedown",function(){
+        item.logCall("click");
+      });
+      button_element.addEventListener('mouseup',function(){
+        item.logCall("click_up");
+      });
     }
     setup();
-
-    if (socket != null){
-        button_element.addEventListener("mousedown",function(){
-            console.log("PUSH");
-            socket.emit('reporting', {'unique':unique, 'data':"Push"});
-        });
-        //off(clicking not working...is fine for now')
-        button_element.addEventListener('mouseup',function(){
-            console.log("UNPUSH");
-            socket.emit('reporting', {'unique':unique, 'data':"Unpush"});
-            socket.emit("THING");
-        });
-        socket.on("update_"+unique,function(val){
-            button_element.style.backgroundColor = val['bgcolor'];
-            button_element.style.color = val['color'];
-            button_element.innerHTML = val['text'];
-            console.log(val)
-
-
-        });
-    };
 };
