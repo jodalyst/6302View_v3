@@ -1,5 +1,5 @@
 
-#Copyright (c) 2017 Joseph D. Steinmeyer (jodalyst)
+#Copyright (c) 2017 Joseph D. Steinmeyer (jodalyst) and Kevin Fang (thereddking)
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
 #  in the Software without restriction, including without limitation the rights to use,
@@ -18,10 +18,24 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
 #questions? email me at jodalyst@mit.edu
+from importlib import import_module
 import time
 import math
+import os
+from flask import Response
 from flask import Flask, render_template, session, request
 from flask_cors import CORS, cross_origin
+
+#Install pip install opencv-python
+# CAMERA=OPENCV python base.py
+
+# import camera driver
+if os.environ.get('CAMERA'):
+    Camera = import_module('camera_' + os.environ['CAMERA']).Camera
+else:
+    from camera import Camera
+# Raspberry Pi camera module (requires picamera package)
+# from camera_pi import Camera
 
 
 #Start up Flask server:
@@ -43,6 +57,17 @@ def index():
     #    thread.daemon = True
     #    thread.start()
     return render_template('index.html')
+
+def gen(camera):
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen(Camera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
