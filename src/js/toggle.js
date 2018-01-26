@@ -6,6 +6,7 @@
 */
 function Toggle(title,names=["OFF","ON"]){
     var item = new Item(title);
+    item.setType("TOGGLE");
     var div_id = item.div_id;
     var unique = item.unique;
     var holder = item.container;

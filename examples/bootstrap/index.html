@@ -46,12 +46,17 @@
           <p><i>Enter the IP address printed from your microcontroller's Serial readout here, press Submit/Connect, and start working.</i></p>
           <p>Local IP: <input type="text" name="ipaddress" id="ipaddress"/><button id="ipsubmit" style="vertical-align:middle"><span>Submit/Connect</span></button></p>
           <div>
-          <h3 id="grid_status">Grid Locked</h3>
+          <h4 id="grid_status">Grid Locked</h4>
           <div class="ckbx-style-8">
               <input type="checkbox" id="grid_lock" name="hey">
               <label for="grid_lock"></label>
           </div>
-            <h3 id="grid_status">CSV Generate?</h3>
+          <h4 id="grid_status">CSV?</h4>
+          <div class="ckbx-style-8">
+              <input type="checkbox" id="csv_yes" name="csv_yes">
+              <label for="csv_yes"></label>
+          </div>
+            <h4 id="grid_status">CSV Generate?</h4>
             <div class="ckbx-style-8">
                 <input type="checkbox" id="csv_enable" value="1" name="csv_enable">
                 <label for="csv_enable"></label>

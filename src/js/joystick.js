@@ -10,6 +10,7 @@ var joysticks = new Array();
 
 function Joystick(name, color = "red") {
   var item = new Item(name);
+  item.setType("JOYSTICK");
   var div_id = item.div_id;
   var color = color;
   var unique = item.unique;

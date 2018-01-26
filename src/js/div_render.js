@@ -5,6 +5,7 @@
 */
 function Div_Render(title,width=300,height=300){
   var item = new Item(title);
+  item.setType("DIV_RENDER");
   var div_id = item.div_id;
   var unique = item.unique;
   var socket = socket;

@@ -12,6 +12,7 @@
 
 function Slider(label, rrange, resolution, toggle, color = null) {
   var item = new Item(label);
+  item.setType("SLIDER");
   var div_id = item.div_id;
   var unique = item.unique; //unique identifying number
   var holder = item.container;
@@ -154,9 +155,15 @@ function Slider(label, rrange, resolution, toggle, color = null) {
         high_input.value = value[2];
         document.dispatchEvent(ui_change);
       });
+      slider_element.noUiSlider.on('end', function(value) {
+        item.logCall("range");
+        item.log(LOG.DATA, value);
+      });
       toggle_in.addEventListener("change", function() {
         if (toggle_in.checked) {
           toggling = true;
+          period_input.disabled = true;
+          item.logCall("toggle_timer","ON");
           var period_value = parseFloat(period_input.value);
           if (period_value === 0 || period_value == null) {
             period_input.value = 1;
@@ -176,21 +183,11 @@ function Slider(label, rrange, resolution, toggle, color = null) {
           }
         } else {
           toggling = false;
+          period_input.disabled = false
+          item.logCall("toggle_timer","OFF");
           clearInterval(toggle_timer);
         }
       });
-
-      //listeners for manual typed changes:
-      /*
-      period_input.addEventListener('click', function(){
-          if (toggling){
-              period_input.value = current_period;
-              alert("Can't change period during active toggling!");
-          }else{
-              current_period = parseFloat(period_input.value);
-          }
-      });
-      */
       low_input.addEventListener('click', function() {
         slider_element.noUiSlider.set([this.value, null, null]);
         item.logCall("range");

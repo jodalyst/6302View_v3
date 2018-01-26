@@ -88,12 +88,8 @@ document.getElementById("csv_enable").addEventListener("change", function() {
     recording_csv = true;
     logger.initialize();
   } else { //when you shut it off
-    recording_csv = false;
-    var nameo = document.getElementById("csv_name").value + "_" + String(Date.now()); //bingo was his nameo
-    var header = [csv_header_inputs.concat(csv_header_outputs)];
-    var to_out = header.concat(data_for_csv);
-    exportCSV(nameo, to_out);
-    logger.download();
+
+    logger.download(document.getElementById("csv_name").value,document.getElementById("csv_yes").checked);
   }
 });
 
@@ -240,51 +236,6 @@ var inputEmit = function() {
 
 //var rate_limit = setInterval(function(){ready_to_fire = true;},100); //leading to disconnects in slider and what gets sent down
 
-/* Based off of code from here:
-https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
-*/
-var exportCSV = function(filename, rows) {
-  var processRow = function(row) {
-    var finalVal = '';
-    for (var j = 0; j < row.length; j++) {
-      var innerValue = row[j] === null ? '' : row[j].toString();
-      if (row[j] instanceof Date) {
-        innerValue = row[j].toLocaleString();
-      };
-      var result = innerValue.replace(/"/g, '""');
-      if (result.search(/("|,|\n)/g) >= 0)
-        result = '"' + result + '"';
-      if (j > 0)
-        finalVal += ',';
-      finalVal += result;
-    }
-    return finalVal + '\n';
-  };
-
-  var csvFile = '';
-  for (var i = 0; i < rows.length; i++) {
-    csvFile += processRow(rows[i]);
-  }
-
-  var blob = new Blob([csvFile], {
-    type: 'text/csv;charset=utf-8;'
-  });
-  if (navigator.msSaveBlob) { // IE 10+
-    navigator.msSaveBlob(blob, filename);
-  } else {
-    var link = document.createElement("a");
-    if (link.download !== undefined) { // feature detection
-      // Browsers that support HTML5 download attribute
-      var url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", filename);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  }
-}
 
 var array_equals = function(array1, array2) {
   // if the other array is a falsy value, return

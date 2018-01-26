@@ -6,6 +6,7 @@
 
 function Numerical_Reporter(title,range,color,bg_color,precision=null){
   var item = new Item(title);
+  item.setType("NUM_REPORTER");
   var div_id = item.div_id;
   var unique = item.unique;
   var holder = item.container;

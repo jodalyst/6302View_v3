@@ -4,6 +4,7 @@
 */
 function Template(title){
   var item = new Item(title);
+  item.setType("TEMPLATE");
   var div_id = item.div_id;
   var unique = item.unique;
   var overall = item.container;

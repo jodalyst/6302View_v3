@@ -6,6 +6,7 @@
 */
 function PushButton(title,label,color=null,bg_color=null){
   var item = new Item(title);
+  item.setType("BUTTON");
 	var div_id = item.div_id;
   var unique = item.unique; //unique identifying number
     var label = String(label);

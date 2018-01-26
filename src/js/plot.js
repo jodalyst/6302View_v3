@@ -11,6 +11,7 @@
 */
 function Plot(title, type, width, height, x_range, y_range, num_traces, colors) {
   var item = new Item(title);
+  item.setType("PLOT_" + type);
   var div_id = item.div_id;
   var unique = item.unique;
   var overall = item.container;
