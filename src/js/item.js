@@ -110,7 +110,12 @@ function Item(name) {
     console.log("Update Function Defaults");
     item.logCall("update");
   }
-
+  this.get = function() {
+    console.log("Requesting Values");
+  }
+  this.action = function() {
+    console.log("ACTION!");
+  }
   this.init();
   this.setSize();
 

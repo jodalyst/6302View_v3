@@ -121,6 +121,7 @@
 
       return array;
     }
+    var joystick;
     window.onload = function(){
       setGlobals("gui_land");
       console.log("HI");
@@ -129,7 +130,7 @@
       var parallels = new Plot("PLOT","BAR",PLOT_WIDTH,PLOT_HEIGHT,100,[-200,200],3,["green","yellow","blue"])
       var slider1 = new Slider("K_p",[0,20],0.1,false);
       var slider1 = new Slider("K_d",[0,5],0.01,true,);
-      var joystick = new Joystick("K_d3",color="blue");
+      joystick = new Joystick("K_d3",color="blue");
       var div2 = new Div_Render("Value");
       var toggle = new Toggle("Wtf");
       var series = new Plot('Accelerations',"LINE",PLOT_WIDTH, PLOT_HEIGHT,60,[-100,100],3,["green","yellow","blue"]);

@@ -10,14 +10,13 @@
   Updated v 1.1
 */
 
-function Slider(label, rrange, resolution, toggle, color = null) {
+function Slider(label, rrange, resolution, toggle) {
   var item = new Item(label);
   item.setType("SLIDER");
   var div_id = item.div_id;
   var unique = item.unique; //unique identifying number
   var holder = item.container;
   var label = String(label);
-  var color = color;
   var min = parseFloat(rrange[0]);
   var max = parseFloat(rrange[1]);
   var slider_element;
@@ -175,9 +174,11 @@ function Slider(label, rrange, resolution, toggle, color = null) {
               if (parseFloat(spec_input.value) === top_lim) {
                 slider_element.noUiSlider.set([null, bott_lim, null]);
                 item.log(LOG.DATA, bott_lim);
+                item.action(bott_lim);
               } else {
                 slider_element.noUiSlider.set([null, top_lim, null]);
                 item.log(LOG.DATA, top_lim);
+                item.action(top_lim);
               }
             }, 1000 * period_value);
           }
@@ -213,6 +214,8 @@ function Slider(label, rrange, resolution, toggle, color = null) {
         document.dispatchEvent(ui_change);
         item.logCall("update");
         item.log(LOG.DATA, value);
+
+        item.action(value);
       });
     }
 
@@ -228,13 +231,18 @@ function Slider(label, rrange, resolution, toggle, color = null) {
       slider_element.noUiSlider.set([parseFloat(value)]); //update value except for limits
     };
   }
-
+  var self = this;
+  item.update = function(value) {
+    self.update(value);
+  }
+  item.get = function() {
+    return parseFloat(spec_input.value);
+  }
   this.value = function() {
     return parseFloat(spec_input.value);
   }
   spec_input.addEventListener('click', function() {
     if (toggle) slider_element.noUiSlider.set([null, this.value, null]);
     else slider_element.noUiSlider.set([this.value]);
-
   });
 };

@@ -13,6 +13,8 @@ function VideoFrame(title,size,feedurl){
   videofeed.src = feedurl;
   videofeed.width = size[0];
   overall.appendChild(videofeed);
-
+  item.update = function(url) {
+    videofeed.src = url;
+  }
   return item;
 }

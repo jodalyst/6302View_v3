@@ -8,5 +8,8 @@ function Template(title){
   var div_id = item.div_id;
   var unique = item.unique;
   var overall = item.container;
+
+  /* To override a default function */
+  // item.update = function(yourvariables) { YOUR CODE };
   return item;
 }

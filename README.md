@@ -1,12 +1,12 @@
 
 # Status of Current Build
 
-This repo houses a current standalone build of the whole microcontroller-to-javascript infrastructure. 
-
+This repo houses a current standalone build of the whole microcontroller-to-javascript infrastructure.
+[Docs](https://github.com/jodalyst/6302View_v3/wiki/Introduction)
 
 ## Software-Side Overview
 
-Currently, the browser/client-side interface 
+Currently, the browser/client-side interface
 
 
 ## MCU-Side Overview
@@ -50,7 +50,7 @@ void setup()
     cm.addSlider("Kp",-5,5,0.1,false, &Kp); //add a slider called Kp and link it to variable Kp
     cm.addSlider("Kd",-5,5,0.1,false, &Kd); //add a slider called Kd and link it to variable Kd
     cm.addSlider("Desired",-5,5,0.1,true, &desired); // similar...
-    cm.addToggle("CT or DT", &ct_or_dt); 
+    cm.addToggle("CT or DT", &ct_or_dt);
     cm.addPlot("Angle",-3,3,100, &angle); //add a plotter called "Angle" and link it to variable angle
     cm.addPlot("Omega",-50,50,100, &omega); //similar...
     cm.addPlot("dwdt",-10,10,100, &dwdt); //similar...
@@ -80,7 +80,7 @@ The second type of variable are outgoing values. These are values which you have
 
 It is entirely possible to have a single variable be associated with an incoming signal and an outgoing signal.  
 
-We use pointers to link to these two classes of variables, minimizing the need for the user to do explicit assignments/function calls in loop and keeping the code decluttered. 
+We use pointers to link to these two classes of variables, minimizing the need for the user to do explicit assignments/function calls in loop and keeping the code decluttered.
 
 You start off by making an object based off the `CommManager` class. At instantiation you specify two critical values: the control loop period (in microseconds) and the reporting loop period (in microseconds).  The former must be shorter than the latter. Assuming we call this object `cm`, upon instantiation, you can either rely on default by simply doing `CommManager cm;` (which falls back to a 1000 us control loop period and 20000 us reporting loop period) or via specifying values like so: `CommManager cm(1000,25000);` which gives a 1000 us control loop period and 25000 us reporting loop period.
 
@@ -90,7 +90,7 @@ After that there's not much to do with the object other than add different input
 
 ## Creation of Widgets
 
-There are four three primary widgets: Plots, Sliders, and Toggles.  Sliders have two sub-types depending on needs of the user. When you declare a slider you use the following format.  The first argument is the title of the slider, then the lower and upper bounds, the slider-resolution, the toggle argument (more on that below), and then the address of the variable you want linked to that slider (meaning every time you change the slider in the gui that variable will get updated.) 
+There are four three primary widgets: Plots, Sliders, and Toggles.  Sliders have two sub-types depending on needs of the user. When you declare a slider you use the following format.  The first argument is the title of the slider, then the lower and upper bounds, the slider-resolution, the toggle argument (more on that below), and then the address of the variable you want linked to that slider (meaning every time you change the slider in the gui that variable will get updated.)
 
 
 ```
@@ -120,7 +120,7 @@ It ends up looking like the image below. It is still a standard slider, but in a
 The next thing you can add is a toggle switch and it is basically a binary slider. This also needs a pointer to a float (to make type-handling easier), but the linked variable will only be `1.0` or `0.0`.
 
 ```
-cm.addToggle("CT or DT", &ct_or_dt); 
+cm.addToggle("CT or DT", &ct_or_dt);
 ```
 
 It results in the following widget that should be pretty self-explanatory:
