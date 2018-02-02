@@ -41,5 +41,7 @@ function Numerical_Reporter(title,range,color,bg_color,precision=null){
     item.logCall("step");
     item.log(LOG.DATA,format(value));
   };
-
+  item.get = function() {
+    return this.value;
+  }
 };

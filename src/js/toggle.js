@@ -43,24 +43,33 @@ function Toggle(title,names=["OFF","ON"]){
       built = true;
 
     }
-
+    item.update = function(value) {
+      if(value) slider_input.checked = true;
+      else slider_input.checked = false;
+      value_div.innerHTML = names[slider_input.checked?1:0];
+    }
     this.update = function(value){
-        if(value) slider_input.checked = true;
-        else slider_input.checked = false;
-        value_div.innerHTML = names[slider_input.checked?1:0];
+      if(value) slider_input.checked = true;
+      else slider_input.checked = false;
+      value_div.innerHTML = names[slider_input.checked?1:0];
+    }
+    item.get = function() {
+      return slider_input.checked?1:0;
     }
     this.value = function(){
         return slider_input.checked?1:0;
     }
     setup();
     var checko = function(element){
-        if (slider_input.checked){
-        }else{
-        }
-        value_div.innerHTML = names[slider_input.checked?1:0];
-        document.dispatchEvent(ui_change);
-        item.logCall("update");
-        item.log(LOG.DATA,names[slider_input.checked?1:0]);
+      if (slider_input.checked){
+      }else{
+      }
+      value_div.innerHTML = names[slider_input.checked?1:0];
+      document.dispatchEvent(ui_change);
+      item.logCall("update");
+      item.log(LOG.DATA,names[slider_input.checked?1:0]);
+
+      item.action(slider_input.checked?1:0);
     }
     slider_input.addEventListener('change', checko, false);
 

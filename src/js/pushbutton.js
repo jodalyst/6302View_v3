@@ -32,9 +32,11 @@ function PushButton(title,label,color=null,bg_color=null){
       }
       button_element.addEventListener("mousedown",function(){
         item.logCall("click");
+        item.action(1);
       });
       button_element.addEventListener('mouseup',function(){
         item.logCall("click_up");
+        item.action(0);
       });
     }
     setup();

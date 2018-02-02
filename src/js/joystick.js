@@ -62,7 +62,7 @@ function Joystick(name, color = "red") {
       }
     };
   }
-
+  var getData = [0,0];
   // Print data into elements
   var debug = function(obj) {
     setTimeout(function() {
@@ -70,8 +70,16 @@ function Joystick(name, color = "red") {
       if (obj.angle) {
         stats.innerHTML = "<p>Angle: " + Math.floor(obj.angle.radian * 10000) / 10000 + "<br/>Force: " + Math.floor(obj.force * 10000) / 10000 + "</p>";
 				item.log(LOG.DATA,Math.floor(obj.force * 10000) / 10000 +  " @ " + Math.floor(obj.angle.radian * 10000));
+        getData = [Math.floor(obj.angle.radian * 10000) / 10000,Math.floor(obj.force * 10000) / 10000];
+      } else {
+        getData = [0,0];
+          stats.innerHTML = "<p>Angle: " +0+ "<br/>Force: " + 0 + "</p>";
       }
     }, 0);
+  }
+  item.get = function() {
+    // console.log(joystick);
+    return getData;
   }
   setup();
 

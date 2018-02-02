@@ -10,20 +10,23 @@
 
     <title>6302View</title>
 
-    <!-- Bootstrap core CSS -->
-    <!-- <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"> -->
 
     <!-- Custom fonts for this template -->
     <!-- <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css"> -->
     <!-- <link rel="stylesheet" href="vendor/simple-line-icons/css/simple-line-icons.css"> -->
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="/src/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
 
     <script src="/src/js/globals.js" ></script>
 
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet"> -->
+    <link href="/src/css/lato.css" rel="stylesheet">
+
+    <!-- <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet"> -->
+    <link href="/src/css/catamaran.css" rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet"> -->
+    <link href="/src/css/catamaran.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="/src/css/new-age.css" rel="stylesheet">
@@ -74,7 +77,8 @@
       <!-- </div> -->
     </header>
 
-        <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <!-- <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script> -->
+        <script src="/src/js/d3.v3.min.js" charset="utf-8"></script>
         <script src="/src/js/packery.pkgd.min.js"></script>
         <script src="/src/js/draggabilly.pkgd.min.js"></script>
         <script src="/src/js/enum.js" ></script>
@@ -117,6 +121,7 @@
 
       return array;
     }
+    var joystick;
     window.onload = function(){
       setGlobals("gui_land");
       console.log("HI");
@@ -125,27 +130,27 @@
       var parallels = new Plot("PLOT","BAR",PLOT_WIDTH,PLOT_HEIGHT,100,[-200,200],3,["green","yellow","blue"])
       var slider1 = new Slider("K_p",[0,20],0.1,false);
       var slider1 = new Slider("K_d",[0,5],0.01,true,);
-      var joystick = new Joystick("K_d3",color="blue");
+      joystick = new Joystick("K_d3",color="blue");
       var div2 = new Div_Render("Value");
       var toggle = new Toggle("Wtf");
       var series = new Plot('Accelerations',"LINE",PLOT_WIDTH, PLOT_HEIGHT,60,[-100,100],3,["green","yellow","blue"]);
       var video = new VideoFrame("Video",[300,200],videofeedlocation);
-      // timer = setInterval(function(){
-      //     series.step([[mouseX],[mouseY]]);
-      // }, 10);
+      timer = setInterval(function(){
+          series.step([[mouseX],[mouseY]]);
+      }, 10);
       var left = [];
       var right = [];
-      // timer = setInterval(function(){
-      //     left.push(mouseX-100);
-      //     right.push(mouseY-100);
-      //     if (left.length > 100) {
-      //       left.shift();
-      //       right.shift();
-      //     }
-      //     // shuffle(left);
-      //     // shuffle(right);
-      //     parallels.update([left,right,[30,30]]);
-      // }, 100);
+      timer = setInterval(function(){
+          left.push(mouseX-100);
+          right.push(mouseY-100);
+          if (left.length > 100) {
+            left.shift();
+            right.shift();
+          }
+          // shuffle(left);
+          // shuffle(right);
+          parallels.update([left,right,[30,30]]);
+      }, 100);
       div2.update('<h1>HI</h1>');
 
       document.dispatchEvent(new Event("field_built"));
