@@ -2,18 +2,6 @@
 <html>
 <head>
 
-  <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-  <script src="/src/js/packery.pkgd.min.js"></script>
-  <script src="/src/js/draggabilly.pkgd.min.js"></script>
-  <script src="/src/js/socket.io.js"></script>
-  <script src="/src/js/nouislider.min.js" ></script>
-  <script src="/src/js/jinstr.js" ></script>
-  <script src="/src/js/time_series.js" ></script>
-  <script src="/src/js/pushbutton.js" ></script>
-  <script src="/src/js/toggle.js" ></script>
-  <script src="/src/js/slider.js" ></script>
-  <script src="/src/js/wNumb.js" ></script>
-  <script src="/src/js/numerical_reporter.js" ></script>
   <link rel="stylesheet" type="text/css" href="/src/css/checkboxes.min.css">
   <link rel="stylesheet" type="text/css" href="/src/css/nouislider.min.css">
   <link rel="stylesheet" type="text/css" href="/src/css/gui.css">
@@ -38,9 +26,12 @@
     <label for="csv_enable"></label>
 </div>
 </div>
+<div style="float:left;width:200px;">
+    <p>CSV Name: <input type="text" name="csv_name" id="csv_name"/></p>
+</div>
 </div>
 
-<div class="cp">
+<div id="gui_land" class="cp">
   <div class="cp-item" id="plotbox"></div>
   <div class="cp-item" id="plotbox2"></div>
   <div class="cp-item" id="sliderbox1"></div>
@@ -51,6 +42,19 @@
 </div>
 
 
+  <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="/src/js/packery.pkgd.min.js"></script>
+  <script src="/src/js/draggabilly.pkgd.min.js"></script>
+  <script src="/src/js/globals.js"></script>
+  <script src="/src/js/socket.io.js"></script>
+  <script src="/src/js/nouislider.min.js" ></script>
+  <script src="/src/js/jinstr.js" ></script>
+  <script src="/src/js/time_series.js" ></script>
+  <script src="/src/js/pushbutton.js" ></script>
+  <script src="/src/js/toggle.js" ></script>
+  <script src="/src/js/slider.js" ></script>
+  <script src="/src/js/wNumb.js" ></script>
+  <script src="/src/js/numerical_reporter.js" ></script>
 <script>
 //Use these when laying out colors!
 var standard_colors = ["blue","red","green","yellow","purple"];
@@ -68,7 +72,7 @@ var PLOT_WIDTH = 300;
 
 //constants used for WS state machine:
 var IDLE = 0;
-var BUILDING = 1; 
+var BUILDING = 1;
 var UPDATE =2;
 var RUNNING = 3;
 //system state variable for WS state machine
@@ -110,12 +114,12 @@ document.getElementById("ipsubmit").addEventListener("mousedown",function(){
     ws.onopen = function(){
       // Web Socket is connected, send data using send()
       console.log("web socket established");
-    }; 
+    };
     ws.onmessage = MessageParser(evt);
- 
-    ws.onclose = function(){ 
+
+    ws.onclose = function(){
       // websocket is closed.
-      console.log("Connection is closed..."); 
+      console.log("Connection is closed...");
     };
 });
 
@@ -219,7 +223,6 @@ var inputEmit = function(){
 
 </script>
 
-<script src="/src/js/draggable.js"></script>
 
 </body>
 </html>
