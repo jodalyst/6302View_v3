@@ -9,7 +9,6 @@ const LOG = new Enum('SYSTEM', 'WARNING', 'ACTION', 'DATA');
 
 function Logger() {
   /*
-
   */
   this.csvContent = [];
   this.jsonContent = [];
@@ -43,7 +42,7 @@ function Logger() {
     if (extra.length > 0) {
       row.push(extra);
     }
-    json = {"item":{"type":item.type,"unique":item.unique,"name":item.name},"type":LOG.getName(type),"message":message,"extra":extra};
+    json = {"item":{"type":item.type,"unique":item.unique,"name":item.name},"type":LOG.getName(type),"message":message,"extra":extra,"timestamp":timestamp};
     this.jsonContent.push(json);
     this.csvContent.push(row);
   }
@@ -89,7 +88,7 @@ function Item(name) {
     var self = this;
 
     this.object.addEventListener('item-didMove', function() {
-      self.itemDidMove(self)
+      self.itemDidMove(self);
     });
     this.object.appendChild(bar);
     this.object.appendChild(container);

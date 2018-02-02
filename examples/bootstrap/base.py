@@ -27,15 +27,15 @@ from flask import Flask, render_template, session, request
 from flask_cors import CORS, cross_origin
 
 #Install pip install opencv-python
-# CAMERA=OPENCV python base.py
+# CAMERA=opencv python base.py
 
 # import camera driver
 if os.environ.get('CAMERA'):
     Camera = import_module('camera_' + os.environ['CAMERA']).Camera
 else:
     from camera import Camera
-# Raspberry Pi camera module (requires picamera package)
-# from camera_pi import Camera
+    # Raspberry Pi camera module (requires picamera package)
+    # from camera_pi import Camera
 
 
 #Start up Flask server:
